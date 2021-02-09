@@ -13,6 +13,7 @@ class AdminController extends BaseController
         $list = (new AdminLogic())->getAdminList($param);
 
 
+        p($list);
 
     }
 

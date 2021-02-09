@@ -14,6 +14,14 @@ class IndexController extends BaseController
 
 
 
+
+
+        return view();
+
+
+
+
+
         p('这里是admin模块');
     }
 

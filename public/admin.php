@@ -16,6 +16,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 // 执行HTTP应用并响应
 $http = (new  App())->http;
+//通过指定名称绑定模块，避免入口文件名称改变后导致访问出错
 $response = $http->name('admin')->run();
 $response->send();
 $http->end($response);

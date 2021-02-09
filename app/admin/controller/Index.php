@@ -1,5 +1,5 @@
 <?php
-namespace app\controller;
+namespace app\admin\controller;
 
 use app\BaseController;
 
@@ -8,7 +8,7 @@ class Index extends BaseController
     public function index()
     {
 
-        echo 1464646;die;
+        p('这里是admin模块');
 
     }
 

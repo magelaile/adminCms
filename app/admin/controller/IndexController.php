@@ -21,4 +21,12 @@ class IndexController extends BaseController
     }
 
 
+    //主页
+    public function home() {
+
+
+        return View::fetch();
+    }
+
+
 }

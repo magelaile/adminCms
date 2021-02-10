@@ -35,7 +35,7 @@ class AdminAuthLogic {
             ];
             //跳转链接生成
             if(!empty($list_one['auth_c']) && !empty($list_one['auth_a'])) {
-                $tmp_one['_href'] = url($list_one['auth_c'].'/'.$list_one['auth_a'])->build();
+                $tmp_one['_href'] = url('/'.$list_one['auth_c'].'/'.$list_one['auth_a'])->build();
             }
 
 

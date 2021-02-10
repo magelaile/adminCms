@@ -14,9 +14,9 @@ class IndexController extends BaseController
     public function index() {
         //获取左侧菜单
         $menu_list = (new AdminAuthLogic())->getMenuList();
+        //p($menu_list);
 
         View::assign('menulist',$menu_list);
-
         return View::fetch();
     }
 

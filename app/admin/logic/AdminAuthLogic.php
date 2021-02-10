@@ -15,7 +15,7 @@ class AdminAuthLogic {
         }*/
         //【注意：排序必须首先以auth_level升序排序】
         $model_admin_auth = new AdminAuth();
-        $lists = $model_admin_auth->where($map)->order('auth_level,sort ASC')->select();
+        $lists = $model_admin_auth->where($map)->order('auth_level,sort ASC')->select()->toArray();
 
         //p($lists);
 
@@ -35,7 +35,7 @@ class AdminAuthLogic {
             ];
             //跳转链接生成
             if(!empty($list_one['auth_c']) && !empty($list_one['auth_a'])) {
-                $tmp_one['_href'] = url($list_one['auth_c'].'/'.$list_one['auth_a']);
+                $tmp_one['_href'] = url($list_one['auth_c'].'/'.$list_one['auth_a'])->build();
             }
 
 

@@ -15,14 +15,14 @@ class AdminLogic
         ];
 
         //关联模型
-        $with = ['role' => function ($query) {
+        $with = ['role'=>function ($query) {
             $query->field('role_id,role_name');
         }];
 
         $model_admin = new Admin();
         $list = $model_admin->with($with)->where($where)->select()->toArray();
 
-        return ['status' => true, 'data' => $list, 'msg' => ''];
+        return ['status'=>true,'data'=>$list,'msg'=>''];
     }
 
 

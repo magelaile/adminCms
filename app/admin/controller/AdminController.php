@@ -24,7 +24,7 @@ class AdminController extends BaseController
             return ['code'=>0,'msg'=>$res['msg'],'count'=>$res['count'],'data'=>$res['data']];
         }
 
-        
+
         return View::fetch();
     }
 

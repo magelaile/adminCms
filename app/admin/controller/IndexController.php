@@ -13,7 +13,8 @@ class IndexController extends BaseController
     //首页
     public function index() {
         //获取左侧菜单
-        $menu_list = (new AdminAuthLogic())->getMenuList();
+        $logic_auth = new  AdminAuthLogic();
+        $menu_list = $logic_auth->getMenuList();
         //p($menu_list);
 
         View::assign('menulist',$menu_list);

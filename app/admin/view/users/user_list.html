@@ -1,3 +1,4 @@
+<!--通过模板标签方式，启用模板布局，需要关闭配置文件中的模板布局配置-->
 {layout name="public/layout" /}
 
 <div class="x-nav">
@@ -34,7 +35,7 @@
                         </div>
                     </form>
                 </div>
-                <!--                <div class="div-divider-line"></div>-->
+<!--                <div class="div-divider-line"></div>-->
                 <div class="layui-card-body">
                     <table class="layui-hide" id="table" lay-filter="table"></table>
                 </div>
@@ -54,7 +55,7 @@
         var initTable = table.render({
             height: 'full-170',  //表格高度设置
             elem: '#'+tableId,
-            url:"{:url('/admin/adminlist')}",
+            url:"{:url('/users/userList')}",
             method: 'post',
             where: getTableWhere(),
             limit:30,
@@ -87,8 +88,8 @@
 
         //获取检索条件
         function getTableWhere() {
-            console.log(form.val('search-form'));
-            return form.val('search-form');
+            var formdata = form.val('search-form');
+            console.log(formdata);
         }
 
 
@@ -100,4 +101,20 @@
     });
 
 
+
+
+
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+

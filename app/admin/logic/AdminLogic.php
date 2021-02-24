@@ -22,7 +22,7 @@ class AdminLogic
         }];
 
         $model_admin = new Admin();
-        $list = $model_admin->with($with)->where($where)->page()->select()->toArray();
+        $list = $model_admin->with($with)->where($where)->page($page,$limit)->select()->toArray();
 
         return ['status'=>true,'data'=>$list,'msg'=>''];
     }

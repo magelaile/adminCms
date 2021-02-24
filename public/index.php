@@ -18,7 +18,7 @@ require __DIR__ . '/../vendor/autoload.php';
 $http = (new App())->http;
 
 //$response = $http->run();
-$response = $http->name('admin')->run();
+$response = $http->name('home')->run();
 
 $response->send();
 

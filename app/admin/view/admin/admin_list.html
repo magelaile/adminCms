@@ -11,11 +11,11 @@
     </a>
 </div>
 
-<div class="layui-fluid">
+<div class="layui-fluid my-no-padding">
     <div class="layui-row">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-body">
+                <div class="layui-card-body my-no-padding-bottom">
                     <form class="layui-form" lay-filter="search-form">
                         <div class="layui-inline layui-show-xs-block">
                             <input class="layui-input" autocomplete="off" placeholder="开始日期" name="start" id="start">
@@ -35,13 +35,33 @@
                     </form>
                 </div>
                 <!--                <div class="div-divider-line"></div>-->
-                <div class="layui-card-body">
+                <div class="layui-card-body my-no-padding-top">
                     <table class="layui-hide" id="table" lay-filter="table"></table>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
+<script type="text/html" id="toolBarTpl">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="DelAll">
+            <i class="layui-icon layui-icon-delete"></i>批量删除
+        </button>
+        <button class="layui-btn layui-btn-sm" onclick="xadmin.open('添加管理员','./adminadd.html',550,350)">
+            <i class="layui-icon layui-icon-add-circle-fine"></i>新增
+        </button>
+    </div>
+</script>
+
+<script type="text/html" id="toolTpl">
+    {{#  if(d.admin_id > 1){ }}
+    <button type="button" onclick="xadmin.open('编辑','adminAddEdit/admin_id/{{d.admin_id}}.html',750,550);" class="layui-btn layui-btn-normal layui-btn-xs">编辑</button>
+    <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="DelOne">删除</button>
+    {{#  } }}
+</script>
+
 
 <script>
 
@@ -50,9 +70,19 @@
         var form    = layui.form;
         var laydate = layui.laydate;
 
+
+        //日期
+        laydate.render({
+            elem : '#start'
+        });
+        laydate.render({
+            elem : '#end'
+        });
+
+
         var tableId = tablefilter = 'table';
         var initTable = table.render({
-            height: 'full-170',  //表格高度设置
+            height: 'full-140',  //表格高度设置
             elem: '#'+tableId,
             url:"{:url('/admin/adminlist')}",
             method: 'post',
@@ -65,22 +95,23 @@
             cols: [[
                 {type: 'checkbox'},
                 {field:'admin_id', title:'ID', width:60, unresize: true, sort: true,align:'center'},
-                {field:'user_name', title:'账号', width:120,align:'center'},
-                {field:'email', title:'邮箱', width:170,align:'center'},
-                {field:'add_time', title:'添加时间', width:160,align:'center',templet:function (d) {
+                {field:'user_name', title:'账号', width:120},
+                {field:'email', title:'邮箱', width:170},
+                {field:'add_time', title:'添加时间', width:160,templet:function (d) {
                         return layui.util.toDateString(d.add_time*1000,'yyyy-MM-dd HH:mm:ss');
                     }},
-                {field:'last_login_time', title:'上次登录时间', width:160,align:'center',templet:function (d) {
+                {field:'last_login_time', title:'上次登录时间', width:160,templet:function (d) {
                         return layui.util.toDateString(d.last_login_time*1000,'yyyy-MM-dd HH:mm:ss');
                     }},
-                {field:'last_login_ip', title:'登录IP',align:'center', width:120},
-                {field:'login_num', title:'登录次数', width:120,align:'center'},
-                {field:'admin_status', title:'状态', width:80,align:'center',templet:function (d) {
-                        var statusArr = {'1':'正常','2':'禁用'};
-                        return statusArr[d.admin_status];
+                {field:'last_login_ip', title:'登录IP', width:120},
+                {field:'login_num', title:'登录次数', width:80,align:'right'},
+                {field:'admin_status', title:'状态', width:80,templet:function (d) {
+                        return d.admin_status.name;
                     }},
-                {field:'role_name', title:'角色', width:100,align:'center'},
-                {fixed: 'right', title:'操作', toolbar: '#toolTpl', width:100,align:'center'},
+                {field:'role', title:'角色', width:100,align:'left',templet:function (d) {
+                        return d.role.role_name;
+                    }},
+                {fixed: 'right', title:'操作', toolbar: '#toolTpl',width: 140},
             ]],
 
         });
@@ -98,6 +129,10 @@
         });
 
     });
+
+
+
+
 
 
 </script>

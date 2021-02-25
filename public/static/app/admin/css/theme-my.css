@@ -1,0 +1,61 @@
+.my-no-padding {
+    padding: 0 !important;
+}
+.my-no-padding-bottom {
+    padding-bottom: 0 !important;
+}
+.my-no-padding-top {
+    padding-top: 0 !important;
+}
+.my-no-margin {
+    margin: 0 !important;
+}
+.my-no-margin-top {
+    margin-top: 0 !important;
+}
+.my-no-margin-bottom {
+    margin-bottom: 0 !important;
+}
+
+/*重写xadmin样式*/
+body{
+    background:#FFFFFF !important;
+}
+.container{
+    background:linear-gradient(to left, #7b4397, #2196f3);
+}
+
+.left-nav{
+    background:#fff !important;
+    border-right: 1px solid #cccccc;
+}
+
+.left-nav a{
+    color:#686a76 !important;
+}
+.left-nav a.active{
+    background: linear-gradient(to left, #7c8ce4, #2196f3) !important;
+    color: #fff !important;
+    border-color:  #7b4397 !important;
+}
+.left-nav a:hover{
+    background: linear-gradient(to left, #7c8ce4, #2196f3) !important;
+    color: #fff !important;
+    border-color:  #7b4397 !important;
+}
+.container .logo a{
+    background: rgba(0,0,0,0) !important;
+}
+.x-nav {
+    padding: 0 20px 0 10px;
+}
+.x-admin-sm .layui-input,.x-admin-sm .layui-select,.x-admin-sm .layui-textarea{
+    /*height: 30px;*/
+}
+
+
+
+
+
+
+

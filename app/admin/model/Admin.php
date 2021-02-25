@@ -12,4 +12,16 @@ class Admin extends Model
     }
 
 
+
+
+    //状态获取器
+    public function getAdminStatusAttr($value) {
+        $status = [
+                -1 => ['value' => -1,'name' => '禁用'],
+                1  => ['value' => 1,'name' => '正常'],
+            ];
+        return $status[$value];
+    }
+
+
 }

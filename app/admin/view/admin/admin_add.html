@@ -1,0 +1,89 @@
+{layout name="public/layout" /}
+
+
+
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form">
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label for="L_email" class="layui-form-label"><span class="x-red">*</span>登陆名</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_email" name="email" required="" lay-verify="email" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux"> <span class="x-red">*</span>注意：注册后不可修改！</div>
+            </div>
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label for="L_email" class="layui-form-label"><span class="x-red">*</span>手机</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_email" name="email" required="" lay-verify="email" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label for="L_email" class="layui-form-label"><span class="x-red">*</span>邮箱</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_email" name="email" required="" lay-verify="email" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label for="L_email" class="layui-form-label"><span class="x-red">*</span>角色</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_email" name="email" required="" lay-verify="email" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label for="L_email" class="layui-form-label"><span class="x-red">*</span>状态</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_email" name="email" required="" lay-verify="email" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label for="L_email" class="layui-form-label"><span class="x-red">*</span>密码</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_email" name="email" required="" lay-verify="email" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label"></label>
+                <button class="layui-btn" lay-filter="add" lay-submit="">增加</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+
+<script>
+
+    layui.use([ 'table', 'form', 'laydate'], function() {
+        var table   = layui.table;
+        var form    = layui.form;
+        var laydate = layui.laydate;
+
+
+        //日期
+        laydate.render({
+            elem : '#start'
+        });
+        laydate.render({
+            elem : '#end'
+        });
+
+
+
+    });
+
+
+
+
+
+
+</script>

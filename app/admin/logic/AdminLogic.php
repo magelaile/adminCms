@@ -23,8 +23,9 @@ class AdminLogic
 
         $model_admin = new Admin();
         $list = $model_admin->with($with)->where($where)->page($page,$limit)->select()->toArray();
+        $count = $model_admin->with($with)->where($where)->count('admin_id');
 
-        return ['status'=>true,'data'=>$list,'msg'=>''];
+        return ['status'=>true,'list'=>$list,'count'=>$count,'msg'=>''];
     }
 
 

@@ -17,7 +17,7 @@ class UsersController extends BaseController
             $logic_users = new UsersLogic();
             $res = $logic_users->getUserList($param);
             if(false===$res['status']) {
-                return ['code'=>0,'msg'=>$res['msg'],'count'=>0,'data'=>[]];
+                return ['code'=>1,'msg'=>$res['msg'],'count'=>0,'data'=>[]];
             }
             return ['code'=>0,'msg'=>$res['msg'],'count'=>$res['count'],'data'=>$res['list']];
         }

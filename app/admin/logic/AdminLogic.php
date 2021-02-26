@@ -28,4 +28,12 @@ class AdminLogic
         return success_return('获取成功!',$list,$count);
     }
 
+
+    //管理员添加
+    public function addAdmin($param = []) {
+
+
+
+    }
+
 }

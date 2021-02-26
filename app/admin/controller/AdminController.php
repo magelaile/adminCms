@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\controller;
 
+use app\admin\model\Admin;
 use app\BaseController;
 use app\admin\logic\AdminLogic;
 use app\admin\logic\AdminRoleLogic;
@@ -26,10 +27,14 @@ class AdminController extends BaseController
 
     //添加管理员
     public function adminAdd() {
+
         if(request()->isPost()) {
+            $param = input();
 
+            $logic_admin = new AdminLogic();
+            $res = $logic_admin->addAdmin($param);
+            return response_json($res);
         }
-
 
         //角色列表
         $logic_admin_role = new AdminRoleLogic();

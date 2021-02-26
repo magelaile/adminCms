@@ -1,3 +1,4 @@
+/*边距设置*/
 .my-no-padding {
     padding: 0 !important;
 }
@@ -16,6 +17,9 @@
 .my-no-margin-bottom {
     margin-bottom: 0 !important;
 }
+
+/*按钮设置*/
+.my-btn-add
 
 /*重写xadmin样式*/
 body{
@@ -49,9 +53,9 @@ body{
 .x-nav {
     padding: 0 20px 0 10px;
 }
-.x-admin-sm .layui-input,.x-admin-sm .layui-select,.x-admin-sm .layui-textarea{
-    /*height: 30px;*/
-}
+
+
+
 
 
 

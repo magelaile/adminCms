@@ -10,6 +10,43 @@ function p($data,$die_flag=true)
     if($die_flag==true) die;
 }
 
+function response_json($res,$extra_data=[]) {
+    $res_arr = [
+        'msg'        => $res['msg']  ? $res['msg']  : '默认提示信息',
+        'data'       => $res['data'] ? $res['data'] : [],
+        'code'       => $res['code'] ? $res['code'] : -1,
+        'count'      => $res['count']? $res['count']: 0,
+        'extra_data' => $res['extra_data'] ? array_merge($res['extra_data'],$extra_data) : $extra_data,
+    ];
+    return json($res_arr);
+}
+
+function success_return($msg='',$data=[],$count=0,$extra_data=[],$code=1) {
+    if(empty($msg)) $msg='操作成功';
+    $res = [
+        'msg'        => $msg,
+        'data'       => $data,
+        'count'      => $count,
+        'code'       => $code,
+        'extra_data' => $extra_data,
+        'status'     => true,
+    ];
+    return $res;
+}
+
+function fail_return($msg='',$data=[],$count=0,$extra_data=[],$code=-1) {
+    if(empty($msg)) $msg='操作失败';
+    $res = [
+        'msg'        => $msg,
+        'data'       => $data,
+        'count'      => $count,
+        'code'       => $code,
+        'extra_data' => $extra_data,
+        'status'     => false,
+    ];
+    return $res;
+}
+
 
 /*加密函数
  */

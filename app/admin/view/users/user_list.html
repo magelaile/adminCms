@@ -53,13 +53,12 @@
 
         var tableId = tablefilter = 'table';
         var initTable = table.render({
-            height: 'full-170',  //表格高度设置
             elem: '#'+tableId,
             url:"{:url('/users/userList')}",
             method: 'post',
             where: getTableWhere(),
-            limit:30,
-            limits:[3,30,60,90,300,500],
+            height: layuiTableInitCfg.height /*高度设置*/,response:layuiTableInitCfg.response /*响应状态码设置*/,
+            limit: layuiTableInitCfg.limit /*分页设置*/,limits:layuiTableInitCfg.limits /*分页设置*/,
             toolbar: '#toolBarTpl', //开启头部工具栏，并为其绑定左侧模板
             defaultToolbar: [],
             page: true,

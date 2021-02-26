@@ -25,8 +25,7 @@ class AdminLogic
         $list = $model_admin->with($with)->where($where)->page($page,$limit)->select()->toArray();
         $count = $model_admin->with($with)->where($where)->count('admin_id');
 
-        return ['status'=>true,'list'=>$list,'count'=>$count,'msg'=>''];
+        return success_return('获取成功!',$list,$count);
     }
-
 
 }

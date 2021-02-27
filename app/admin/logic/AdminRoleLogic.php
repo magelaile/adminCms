@@ -38,7 +38,7 @@ class AdminRoleLogic
         $model_admin_role = new AdminRole();
         $list = $model_admin_role->field($field)->where($where)->select()->toArray();
 
-        return ['status'=>true,'list'=>$list,'count'=>0,'msg'=>''];
+        return success_return('查询成功',$list);
     }
 
 

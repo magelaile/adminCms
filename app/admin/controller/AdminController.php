@@ -2,10 +2,18 @@
 namespace app\admin\controller;
 
 use app\BaseController;
+use think\App;
 use think\facade\View;
 
 class AdminController extends BaseController
 {
+
+    protected $logic_admin;
+
+    public function __construct(App $app)
+    {
+       $this->logic_admin = new \app\admin\logic\AdminLogic();
+    }
 
     //获取管理员列表
     public function adminList() {
@@ -35,10 +43,35 @@ class AdminController extends BaseController
         //角色列表
         $logic_admin_role = new \app\admin\logic\AdminRoleLogic();
         $res_admin_role = $logic_admin_role->getRoleListAll(['field'=>"role_id,role_name"]);
-        View::assign('role_arr',$res_admin_role['list']);
+        View::assign('role_arr',$res_admin_role['data']);
 
         return View::fetch();
     }
+
+    //编辑管理员
+    public function adminEdit() {
+        $param = input();
+
+        $logic_admin = new \app\admin\logic\AdminLogic();
+
+        if(request()->isPost()) {
+
+            $res = $logic_admin->editAdmin($param);
+            return response_json($res);
+        }
+
+
+        $res_admin_info = $logic_admin->getAdminInfo(['admin_id'=>$param['admin_id']]);
+        View::assign('admin_info',$res_admin_info['data']);
+        //p($res_admin_info['data']);
+
+        //角色列表
+        $logic_admin_role = new \app\admin\logic\AdminRoleLogic();
+        $res_admin_role = $logic_admin_role->getRoleListAll(['field'=>"role_id,role_name"]);
+        View::assign('role_arr',$res_admin_role['data']);
+        return View::fetch();
+    }
+
 
 
     //角色列表

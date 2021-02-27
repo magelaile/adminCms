@@ -6,6 +6,7 @@ use think\Validate;
 class AdminValidate extends Validate
 {
     protected $rule=[
+        'admin_id'      => 'gt:0',
         'user_name'     => ['require','alphaNum','length'=>'5,10','isUserNameExist'],
         'phone_num'     => ['require','mobile'],
         'email'         => 'email',
@@ -14,6 +15,7 @@ class AdminValidate extends Validate
     ];
 
     protected $message=[
+        'admin_id'              => '该账号信息有误',
         'user_name.require'     => '账号不能为空',
         'user_name.alphaNum'    => '账号只能为字母和数字',
         'user_name.length'      => '账号长度在5-10个字符之间',
@@ -28,7 +30,7 @@ class AdminValidate extends Validate
         //添加
         'add'   =>  ['user_name','phone_num','email','role_id','password'],
         //编辑
-        'edit'  =>  ['name','age'],
+        'edit'  =>  ['admin_id','phone_num','email','role_id','password'],
     ];
 
 

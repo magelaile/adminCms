@@ -3,7 +3,7 @@
     <title>后台登录-X-admin2.2</title>
     <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
 
     <!--引入CSS-->
     <link rel="stylesheet" href="__CSS__/font.css">
@@ -35,7 +35,7 @@
             height:'full-140', /*表格高度配置*/
             response: {statusName:'code'/*规定数据状态的字段名称，默认：code*/, statusCode: 1/*规定成功的状态码，默认：0*/},
             limit: 30,
-            limits: [3,30,60,90,300,500],
+            limits: [3,10,15,30,60,100,200],
         };
 
 
@@ -52,6 +52,16 @@
         function closeLoading() {
             layer.close(loadingflag);
         }
+
+        //请求地址对象
+        //获取当前请求的url以及各个参数
+        var urlParseObj = {
+            hostname:window.location.hostname,
+            protocol:window.location.protocol,
+            entrance:window.location.pathname.substr(0, window.location.pathname.indexOf('.php')+4),
+            main_url: window.location.protocol+'//'+window.location.hostname+window.location.pathname.substr(0, window.location.pathname.indexOf('.php')+4),
+        };
+        //console.log(urlParseObj);
 
         //----全局配置 end-------------------------------------------------
 

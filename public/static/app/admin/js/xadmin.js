@@ -100,6 +100,49 @@
 	       layer.full(index); 
 	    }
 	}
+
+    /**
+     * [open 在父页面打开弹出层]
+     * @param  {[type]}  title [弹出层标题]
+     * @param  {[type]}  url   [弹出层地址]
+     * @param  {[type]}  w     [宽]
+     * @param  {[type]}  h     [高]
+     * @param  {Boolean} full  [全屏]
+     * @return {[type]}        [description]
+     */
+    Xadmin.prototype.parentOpen = function (title,url,w,h,full) {
+
+        //获取当前iframe页面的 tab-id，并赋值给父页面
+        parent.iframeTabId= $(window.frameElement).attr("tab-id");
+
+        if (title == null || title == '') {
+            var title=false;
+        }
+        if (url == null || url == '') {
+            var url="404.html";
+        }
+        if (w == null || w == '') {
+            var w=($(window.parent).width()*0.9);
+        }
+        if (h == null || h == '') {
+            var h=($(window.parent).height() - 50);
+        }
+        var index = window.parent.layer.open({
+            type: 2,
+            area: [w+'px', h +'px'],
+            fix: false, //不固定
+            maxmin: true,
+            shadeClose: true,
+            shade:0.4,
+            title: title,
+            content: url
+        });
+        if(full){
+            window.parent.layer.full(index);
+        }
+    }
+
+
 	/**
 	 * [close 关闭弹出层]
 	 * @return {[type]} [description]

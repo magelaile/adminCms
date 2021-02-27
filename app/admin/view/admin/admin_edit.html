@@ -9,31 +9,31 @@
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label"><span class="x-red">*</span>登录账号</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="admin01" name="user_name" required="" lay-verify="user_name" autocomplete="off" class="layui-input">
+                    <input type="text" value="{$admin_info['user_name']}" disabled autocomplete="off" class="layui-input">
                 </div>
-                <div class="layui-form-mid layui-word-aux"> <span class="x-red">*</span>注意：注册后不可修改！</div>
+                <div class="layui-form-mid layui-word-aux"> <span class="x-red">*</span>账号不可修改！</div>
             </div>
 
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label"><span class="x-red">*</span>手机</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="15554908942" name="phone_num" required="" lay-verify="phone" autocomplete="off" class="layui-input">
+                    <input type="text" value="{$admin_info['phone_num']}" name="phone_num" required="" lay-verify="phone" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label"><span class="x-red">*</span>邮箱</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="777777@qq.com" name="email" required="" lay-verify="email" autocomplete="off" class="layui-input">
+                    <input type="text" value="{$admin_info['email']}" name="email" required="" lay-verify="email" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label"><span class="x-red">*</span>角色</label>
                 <div class="layui-input-inline">
-                    <select name="role_id" lay-search="">
+                    <select name="role_id" id="role_id" lay-search="">
                         {foreach $role_arr as $key=>$vo }
-                        <option value="{$vo.role_id}">{$vo.role_name}</option>
+                        <option value="{$vo.role_id}" {if condition="$admin_info['role_id'] eq $vo.role_id"}selected{/if} >{$vo.role_name}</option>
                         {/foreach}
                     </select>
 
@@ -51,12 +51,13 @@
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label">密码</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="123456" name="password" lay-verify="password" placeholder="请输入6到12位密码" autocomplete="off" class="layui-input">
+                    <input type="text" value="" name="password" placeholder="为空则不修改密码" autocomplete="off" class="layui-input" />
                 </div>
             </div>
 
             <div class="layui-form-item">
                 <label class="layui-form-label"></label>
+                <input type="hidden" value="{$admin_info['admin_id']}" name="admin_id" />
                 <button type="submit" class="layui-btn" lay-filter="submit" lay-submit="">保存</button>
             </div>
 
@@ -78,7 +79,6 @@
                     return '登录账号至少得5个字符!';
                 }
             },
-            password: [/(.+){6,12}$/, '密码必须6到12位'],
         });
 
         //监听提交
@@ -86,13 +86,13 @@
             console.log(data);
             showLoading('保存中...');
             httpTool.httpPost({
-                url:'{:url("/admin/adminAdd")}',
+                url:'{:url("/admin/adminEdit")}',
                 data:data.field,
                 success:function (res){
                     if('1'==res.code) {
                         xadmin.close();
                         //刷新子页面列表
-                        parent.$("iframe[tab-id="+parent.iframeTabId+"]")[0].contentWindow.tableReload(1);
+                        parent.$("iframe[tab-id="+parent.iframeTabId+"]")[0].contentWindow.tableReload();
 
                     }else{
                         layer.alert(res.msg, {icon : 5});

@@ -10,17 +10,22 @@ function p($data,$die_flag=true)
     if($die_flag==true) die;
 }
 
+
+/* 数据返回Json
+ */
 function response_json($res,$extra_data=[]) {
     $res_arr = [
         'msg'        => $res['msg']  ? $res['msg']  : '默认提示信息',
         'data'       => $res['data'] ? $res['data'] : [],
         'code'       => $res['code'] ? $res['code'] : -1,
         'count'      => $res['count']? $res['count']: 0,
-        'extra_data' => $res['extra_data'] ? array_merge($res['extra_data'],$extra_data) : $extra_data,
+        'extra_data' => empty($res['extra_data']) ? array_merge($res['extra_data'],$extra_data) : $extra_data,
     ];
     return json($res_arr);
 }
 
+/* 成功返回
+ */
 function success_return($msg='',$data=[],$count=0,$extra_data=[],$code=1) {
     if(empty($msg)) $msg='操作成功';
     $res = [
@@ -34,6 +39,8 @@ function success_return($msg='',$data=[],$count=0,$extra_data=[],$code=1) {
     return $res;
 }
 
+/* 失败返回
+ */
 function fail_return($msg='',$data=[],$count=0,$extra_data=[],$code=-1) {
     if(empty($msg)) $msg='操作失败';
     $res = [
@@ -46,6 +53,25 @@ function fail_return($msg='',$data=[],$count=0,$extra_data=[],$code=-1) {
     ];
     return $res;
 }
+
+/* 去除字符串中空格和换行符
+ * @param $data 字符串或者数组
+ */
+function remove_space_and_eol(&$data) {
+    $filter_char = [' ','\t','\r','\n'];
+
+    if(is_string($data)) {
+        return str_replace($filter_char,'', $data);
+
+    }elseif (is_array($data)) {
+        array_walk_recursive($data,function (&$value,$key) use (&$filter_char){
+            if(is_string($value)) {
+                $value = str_replace($filter_char,'', $value);
+            }
+        });
+    }
+}
+
 
 
 /*加密函数

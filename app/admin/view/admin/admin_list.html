@@ -49,7 +49,7 @@
         <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="DelAll">
             <i class="layui-icon layui-icon-delete"></i>批量删除
         </button>
-        <button class="layui-btn layui-btn-sm" onclick="xadmin.open('添加管理员','./adminadd.html',550,450)">
+        <button class="layui-btn layui-btn-sm" onclick=xadmin.parentOpen('添加管理员','{:url("/admin/adminadd")}',550,450)>
             <i class="layui-icon layui-icon-add-circle-fine"></i>新增
         </button>
     </div>
@@ -57,7 +57,7 @@
 
 <script type="text/html" id="toolTpl">
     {{#  if(d.admin_id > 1){ }}
-    <button type="button" onclick="xadmin.open('编辑','adminAddEdit/admin_id/{{d.admin_id}}.html',750,550);" class="layui-btn layui-btn-normal layui-btn-xs">编辑</button>
+    <button type="button" onclick="xadmin.open('编辑管理员','adminAddEdit/admin_id/{{d.admin_id}}.html',750,550);" class="layui-btn layui-btn-normal layui-btn-xs">编辑</button>
     <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="DelOne">删除</button>
     {{#  } }}
 </script>
@@ -93,7 +93,7 @@
             page: true,
             cols: [[
                 {type: 'checkbox'},
-                {field:'admin_id', title:'ID', width:60, unresize: true, sort: true,align:'center'},
+                {field:'admin_id', title:'ID', width:50, unresize: true,align:'center'},
                 {field:'user_name', title:'账号', width:120},
                 {field:'email', title:'邮箱', width:170},
                 {field:'add_time', title:'添加时间', width:160,templet:function (d) {
@@ -117,8 +117,13 @@
 
         //获取检索条件
         function getTableWhere() {
-            console.log(form.val('search-form'));
+            //console.log('列表检索条件',form.val('search-form'));
             return form.val('search-form');
+        }
+
+        //重载列表
+        window.tableReload = function () {
+            initTable.reload();
         }
 
 

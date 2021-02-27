@@ -3,8 +3,6 @@
  * 在使用该工具前需要先引入 jquery
 */
 
-
-
 var httpTool = {
 
     //get请求

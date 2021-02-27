@@ -1,11 +1,7 @@
 <?php
 namespace app\admin\controller;
 
-use app\admin\model\Admin;
 use app\BaseController;
-use app\admin\logic\AdminLogic;
-use app\admin\logic\AdminRoleLogic;
-
 use think\facade\View;
 
 class AdminController extends BaseController
@@ -17,7 +13,7 @@ class AdminController extends BaseController
 
         if(request()->isPost()) {
 
-            $logic_admin = new AdminLogic();
+            $logic_admin = new \app\admin\logic\AdminLogic();
             $res = $logic_admin->getAdminList($param);
             return response_json($res);
         }
@@ -31,13 +27,13 @@ class AdminController extends BaseController
         if(request()->isPost()) {
             $param = input();
 
-            $logic_admin = new AdminLogic();
+            $logic_admin = new \app\admin\logic\AdminLogic();
             $res = $logic_admin->addAdmin($param);
             return response_json($res);
         }
 
         //角色列表
-        $logic_admin_role = new AdminRoleLogic();
+        $logic_admin_role = new \app\admin\logic\AdminRoleLogic();
         $res_admin_role = $logic_admin_role->getRoleListAll(['field'=>"role_id,role_name"]);
         View::assign('role_arr',$res_admin_role['list']);
 
@@ -51,7 +47,7 @@ class AdminController extends BaseController
 
         if(request()->isPost()) {
 
-            $logic_admin_role = new AdminRoleLogic();
+            $logic_admin_role = new \app\admin\logic\AdminRoleLogic();
             $res = $logic_admin_role->getRoleList($param);
             if(false===$res['status']) {
                 return ['code'=>-1,'msg'=>$res['msg'],'count'=>0,'data'=>[]];

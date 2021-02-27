@@ -19,7 +19,9 @@
 }
 
 /*按钮设置*/
-.my-btn-add
+.my-btn-add {
+
+}
 
 /*重写xadmin样式*/
 body{
@@ -54,6 +56,12 @@ body{
     padding: 0 20px 0 10px;
 }
 
+
+/*重写layui样式*/
+/*表格列标题居中*/
+.layui-table th .layui-table-cell {
+    text-align: center;
+}
 
 
 

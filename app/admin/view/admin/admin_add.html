@@ -7,7 +7,7 @@
         <form class="layui-form">
 
             <div class="layui-form-item my-no-margin-bottom">
-                <label class="layui-form-label"><span class="x-red">*</span>登陆名</label>
+                <label class="layui-form-label"><span class="x-red">*</span>登录账号</label>
                 <div class="layui-input-inline">
                     <input type="text" value="admin01" id="user_name" name="user_name" required="" lay-verify="user_name" autocomplete="off" class="layui-input">
                 </div>
@@ -31,7 +31,7 @@
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label"><span class="x-red">*</span>角色</label>
                 <div class="layui-input-inline">
-                    <select name="role" id="role" lay-search="">
+                    <select name="role_id" id="role_id" lay-search="">
                         {foreach $role_arr as $key=>$vo }
                         <option value="{$vo.role_id}">{$vo.role_name}</option>
                         {/foreach}
@@ -43,8 +43,8 @@
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label"><span class="x-red">*</span>状态</label>
                 <div class="layui-input-inline">
-                    <input type="radio" name="sex" value="1" title="正常" checked="">
-                    <input type="radio" name="sex" value="-1" title="禁用">
+                    <input type="radio" name="admin_status" value="1" title="正常" checked="">
+                    <input type="radio" name="admin_status" value="-1" title="禁用">
                 </div>
             </div>
 
@@ -75,7 +75,7 @@
         form.verify({
             user_name: function(value){
                 if(value.length < 5){
-                    return '登录名至少得5个字符!';
+                    return '登录账号至少得5个字符!';
                 }
             },
             password: [/(.+){6,12}$/, '密码必须6到12位'],
@@ -84,15 +84,24 @@
         //监听提交
         form.on('submit(submit)',function (data){
             console.log(data);
-
+            showLoading('保存中...');
             httpTool.httpPost({
                 url:'{:url("/admin/adminAdd")}',
                 data:data.field,
                 success:function (res){
+                    if('1'==res.code) {
+                        xadmin.close();
+                        //刷新子页面列表
+                        parent.$("iframe[tab-id="+parent.iframeTabId+"]")[0].contentWindow.tableReload();
 
+                    }else{
+                        layer.alert(res.msg, {icon : 5});
+                    }
+                },
+                complete:function (res) {
+                    closeLoading();
                 }
             });
-
 
             return false;
         });

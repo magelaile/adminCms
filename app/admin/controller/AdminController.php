@@ -68,6 +68,7 @@ class AdminController extends BaseController
     public function adminDel() {
         $param = input();
         if(request()->isPost()) {
+            $logic_admin = new \app\admin\logic\AdminLogic();
             $res = $logic_admin->delAdmin($param);
             return response_json($res);
         }

@@ -91,6 +91,7 @@
                 success:function (res){
                     if('1'==res.code) {
                         xadmin.close();
+                        parent.layer.msg(res.msg);
                         //刷新子页面列表
                         parent.$("iframe[tab-id="+parent.iframeTabId+"]")[0].contentWindow.tableReload();
 

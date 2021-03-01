@@ -62,13 +62,11 @@ class AdminLogic
 
         remove_space_and_eol($data);
 
-
         $validate_admin = new \app\admin\validate\AdminValidate();
         $result = $validate_admin->scene('add')->check($data);
         if(false===$result){
             return fail_return($validate_admin->getError());
         }
-
 
         $data['salt']       = get_str_by_len(4);
         $data['password']   = md100($data['password'],$data['salt']);
@@ -127,7 +125,7 @@ class AdminLogic
             $res_update = $model_admin->update($data);
             //p($res_update->toArray());
 
-            return success_return();
+            return success_return('保存成功');
 
         } catch (\Exception $e) {
             // 这是进行异常捕获
@@ -138,7 +136,26 @@ class AdminLogic
 
     //删除管理员
     public function delAdmin($param = []) {
+        return success_return('删除成功');
 
+        $ids = trim($param['ids'],',');
+
+        remove_space_and_eol($ids);
+
+        if(empty($ids)) {
+            return fail_return('参数错误');
+        }
+
+        $ids_arr = explode(',',$ids);
+
+        $model_admin = new \app\admin\model\Admin();
+        $res_del = $model_admin->where('admin_id','IN',$ids_arr)->delete();
+
+        if(false===$res_del) {
+            return fail_return('删除失败');
+        }
+
+        return success_return('删除成功');
     }
 
 

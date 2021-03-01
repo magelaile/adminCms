@@ -89,11 +89,10 @@ class AdminLogic
     public function editAdmin($param = []) {
         $data = [
             'admin_id'      => $param['admin_id'],
-            'user_name'     => $param['user_name'],
             'phone_num'     => $param['phone_num'],
             'email'         => $param['email'],
             'role_id'       => $param['role_id'],
-            'password999'      => $param['password'],
+            'password'      => $param['password'],
             'admin_status'  => $param['admin_status'],
         ];
 
@@ -118,22 +117,27 @@ class AdminLogic
             unset($data['password']);
         }
 
-        
-
+        //p($data);die;
+        //unset($data['admin_id']);
 
         $model_admin = new \app\admin\model\Admin();
-        $res_update = $model_admin->update($data);
 
-        p($res_update);die;
+        try {
+            // 这里是主体代码
+            $res_update = $model_admin->update($data);
+            //p($res_update->toArray());
 
+            return success_return();
 
+        } catch (\Exception $e) {
+            // 这是进行异常捕获
+            //print_r($e->getMessage());die;
+            return fail_return($e->getMessage());
+        }
+    }
 
-
-
-        return success_return();
-
-
-
+    //删除管理员
+    public function delAdmin($param = []) {
 
     }
 

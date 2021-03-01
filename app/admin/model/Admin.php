@@ -6,6 +6,8 @@ use think\Model;
 class Admin extends Model
 {
 
+    protected $pk='admin_id';
+
     //关联查询角色名称
     public function role() {
         return $this->hasOne(AdminRole::class,'role_id','role_id');

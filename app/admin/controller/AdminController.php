@@ -8,13 +8,6 @@ use think\facade\View;
 class AdminController extends BaseController
 {
 
-    protected $logic_admin;
-
-    public function __construct(App $app)
-    {
-       $this->logic_admin = new \app\admin\logic\AdminLogic();
-    }
-
     //获取管理员列表
     public function adminList() {
         $param = input();
@@ -60,7 +53,6 @@ class AdminController extends BaseController
             return response_json($res);
         }
 
-
         $res_admin_info = $logic_admin->getAdminInfo(['admin_id'=>$param['admin_id']]);
         View::assign('admin_info',$res_admin_info['data']);
         //p($res_admin_info['data']);
@@ -71,6 +63,17 @@ class AdminController extends BaseController
         View::assign('role_arr',$res_admin_role['data']);
         return View::fetch();
     }
+
+    //管理员删除
+    public function adminDel() {
+        $param = input();
+        if(request()->isPost()) {
+            $res = $logic_admin->delAdmin($param);
+            return response_json($res);
+        }
+        return response_json(fail_return());
+    }
+
 
 
 

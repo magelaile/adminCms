@@ -37,6 +37,11 @@ class AdminRoleLogic
         return success_return('查询成功',$list);
     }
 
+    //添加角色
+    public function addRole($param = []) {
+
+    }
+
 
 
 }

@@ -74,27 +74,6 @@
 
         });
 
-        //头工具栏事件
-        table.on('toolbar('+tablefilter+')', function(obj){
-
-            if('delAll'==obj.event) {
-                parent.layer.confirm('确认删除吗？',function(index){
-                    parent.layer.close(index);
-                    var checkStatus = table.checkStatus(obj.config.id);
-                    var ids_arr = checkStatus.data.map(function (item){
-                        return item.admin_id;
-                    });
-
-                    //获取当前iframe页面的 tab-id，并赋值给父页面
-                    parent.iframeTabId= $(window.frameElement).attr("tab-id");
-                    delAdmin(ids_arr.join(','),function (){
-                        //刷新子页面列表
-                        parent.$("iframe[tab-id="+parent.iframeTabId+"]")[0].contentWindow.tableReload();
-                    });
-                });
-            }
-
-        });
 
         //监听行工具事件
         table.on('tool('+tablefilter+')', function(obj){

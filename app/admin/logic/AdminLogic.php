@@ -34,9 +34,8 @@ class AdminLogic
 
         //查询条件、字段
         $where = [];
-        if(intval($param['admin_id'])>0) {
-            $where['admin_id'] = intval($param['admin_id']);
-        }
+        set_where_if_not_empty($where,$param,'admin_id','=');
+
         $field = isset($param['field']) ? $param['field'] : "*";
 
         if(empty($where)) {

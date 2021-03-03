@@ -89,6 +89,22 @@ class AdminController extends BaseController
         return View::fetch();
     }
 
+    //添加角色
+    public function roleAdd() {
+        if(request()->isPost()) {
+            $param = input();
 
+            $logic_admin = new \app\admin\logic\AdminRoleLogic();
+            $res = $logic_admin->addRole($param);
+            return response_json($res);
+        }
+
+        //角色列表
+        $logic_admin_role = new \app\admin\logic\AdminRoleLogic();
+        $res_admin_role = $logic_admin_role->getRoleListAll(['field'=>"role_id,role_name"]);
+        View::assign('role_arr',$res_admin_role['data']);
+
+        return View::fetch();
+    }
 
 }

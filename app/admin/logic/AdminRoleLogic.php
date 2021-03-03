@@ -9,23 +9,19 @@ class AdminRoleLogic
 
     //获取管理员列表
     public function getRoleList($param = []) {
-        $page = intval($param['page'])>0 ? intval($param['page']) : 1;
-        $limit = intval($param['limit'])>0 ? intval($param['limit']) : 20;
+        list($page,$limit) = set_page_and_limit($param);
 
-        $where = [
-            'is_del' => 0,
-        ];
+        $where = [];
+        set_where_if_not_empty($where,$param,'role_name','LIKE');
+        //p($where);
 
-        //关联模型
-        $with = ['role'=>function ($query) {
-            $query->field('role_id,role_name');
-        }];
+        $field = 'role_id,role_name,add_time,role_desc';
 
-        $model_admin_role = new AdminRole();
-        $list = $model_admin->with($with)->where($where)->page($page,$limit)->select()->toArray();
-        $count = $model_admin->with($with)->where($where)->count('admin_id');
+        $model_admin_role = new \app\admin\model\AdminRole();
+        $list = $model_admin_role->field($field)->where($where)->page($page,$limit)->select()->toArray();
+        $count = $model_admin_role->where($where)->count('role_id');
 
-        return ['status'=>true,'list'=>$list,'count'=>$count,'msg'=>''];
+        return success_return('获取成功!',$list,$count);
     }
 
     //获取所有[符合条件]的角色

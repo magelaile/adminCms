@@ -7,12 +7,14 @@ class AdminLogic
 
     //获取管理员列表
     public function getAdminList($param = []) {
-        $page = intval($param['page'])>0 ? intval($param['page']) : 1;
-        $limit = intval($param['limit'])>0 ? intval($param['limit']) : 20;
+        list($page,$limit) = set_page_and_limit($param);
 
         $where = [
-            'is_del' => 0,
+            ['is_del','=',0],
         ];
+        set_where_if_not_empty($where,$param,'user_name','=');
+        set_where_if_not_empty($where,$param,'phone_num','=');
+        set_where_time($where,$param,'add_time','start_time','end_time');
 
         //关联模型
         $with = ['role'=>function ($query) {
@@ -22,6 +24,7 @@ class AdminLogic
         $model_admin = new \app\admin\model\Admin();
         $list = $model_admin->with($with)->where($where)->page($page,$limit)->select()->toArray();
         $count = $model_admin->with($with)->where($where)->count('admin_id');
+        //echo $model_admin->getLastSql();die;
 
         return success_return('获取成功!',$list,$count);
     }
@@ -147,6 +150,11 @@ class AdminLogic
         }
 
         $ids_arr = explode(',',$ids);
+
+        //排除超级管理员
+        if(in_array('1',$ids_arr)) {
+            return fail_return('删除失败');
+        }
 
         $model_admin = new \app\admin\model\Admin();
         $res_del = $model_admin->where('admin_id','IN',$ids_arr)->delete();

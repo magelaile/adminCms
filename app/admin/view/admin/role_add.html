@@ -1,0 +1,71 @@
+{layout name="public/layout" /}
+
+
+
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form">
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label class="layui-form-label"><span class="x-red">*</span>角色名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="admin01" name="role_name" required="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label class="layui-form-label">角色描述</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="" name="role_desc" required="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <button type="submit" class="layui-btn" lay-filter="submit" lay-submit="">保存</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<script>
+
+    layui.use([ 'table', 'form'], function() {
+        var form    = layui.form;
+
+        //监听提交
+        form.on('submit(submit)',function (data){
+            console.log(data);
+            showLoading('保存中...');
+            httpTool.httpPost({
+                url:'{:url("/admin/adminAdd")}',
+                data:data.field,
+                success:function (res){
+                    if('1'==res.code) {
+                        xadmin.close();
+                        //刷新子页面列表
+                        parent.$("iframe[tab-id="+parent.iframeTabId+"]")[0].contentWindow.tableReload(1);
+
+                    }else{
+                        layer.alert(res.msg, {icon : 5});
+                    }
+                },
+                complete:function (res) {
+                    closeLoading();
+                }
+            });
+
+            return false;
+        });
+
+
+    });
+
+
+
+
+
+
+</script>

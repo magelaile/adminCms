@@ -9,23 +9,13 @@
                 <div class="layui-card-body my-no-padding-bottom">
                     <form class="layui-form" lay-filter="search-form">
                         <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="user_name" placeholder="请输入用户名" autocomplete="off" class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="tel" name="phone_num" placeholder="请输入手机号" autocomplete="off" class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input class="layui-input" autocomplete="off" placeholder="开始日期" name="start_time" id="start_time">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input class="layui-input" autocomplete="off" placeholder="截止日期" name="end_time" id="end_time">
+                            <input type="text" name="role_name" placeholder="请输入角色名称" autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button type="button" class="layui-btn" id="search-btn"><i class="layui-icon layui-icon-search"></i></button>
                         </div>
                     </form>
                 </div>
-                <!--                <div class="div-divider-line"></div>-->
                 <div class="layui-card-body my-no-padding-top">
                     <table class="layui-hide" id="table" lay-filter="table"></table>
                 </div>
@@ -34,46 +24,34 @@
     </div>
 </div>
 
-
 <script type="text/html" id="toolBarTpl">
     <div class="layui-btn-container">
-        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delAll">
-            <i class="layui-icon layui-icon-delete"></i>批量删除
-        </button>
-        <button class="layui-btn layui-btn-sm" onclick="xadmin.parentOpen('添加管理员',urlParseObj.main_url+'/admin/adminAdd.html',550,450)">
+        <button class="layui-btn layui-btn-sm" onclick="xadmin.parentOpen('添加角色',urlParseObj.main_url+'/admin/roleAdd.html',550,450)">
             <i class="layui-icon layui-icon-add-circle-fine"></i>新增
         </button>
     </div>
 </script>
 
 <script type="text/html" id="toolTpl">
-    {{#  if(d.admin_id > 1){ }}
-    <button type="button" onclick="xadmin.parentOpen('编辑管理员',urlParseObj.main_url+'/admin/adminEdit/admin_id/{{d.admin_id}}.html',550,450);" class="layui-btn layui-btn-normal layui-btn-xs">编辑</button>
+    {{#  if(d.role_id > 1){ }}
+    <button type="button" onclick="xadmin.parentOpen('编辑角色',urlParseObj.main_url+'/admin/roleEdit/admin_id/{{d.admin_id}}.html',550,450);" class="layui-btn layui-btn-normal layui-btn-xs">编辑</button>
     <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delOne">删除</button>
+    <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="authEdit">权限</button>
     {{#  } }}
 </script>
 
 
 <script>
 
-    layui.use([ 'table', 'form', 'laydate'], function() {
+    layui.use([ 'table', 'form'], function() {
         var table   = layui.table;
         var form    = layui.form;
-        var laydate = layui.laydate;
-
-        //日期
-        laydate.render({
-            elem : '#start_time'
-        });
-        laydate.render({
-            elem : '#end_time'
-        });
 
         //数据表格
         var tableId = tablefilter = 'table';
         var initTable = table.render({
             elem: '#'+tableId,
-            url:"{:url('/admin/adminlist')}",
+            url:"{:url('/admin/rolelist')}",
             method: 'post',
             where: getTableWhere(),
             height: layuiTableInitCfg.height /*高度设置*/,response:layuiTableInitCfg.response /*响应状态码设置*/,
@@ -82,25 +60,13 @@
             defaultToolbar: [],
             page: true,
             cols: [[
-                {type: 'checkbox'},
-                {field:'admin_id', title:'ID', width:50, unresize: true,align:'center'},
-                {field:'user_name', title:'账号', width:120},
-                {field:'email', title:'邮箱', width:170},
+                {field:'role_id', title:'ID', width:50, unresize: true,align:'center'},
+                {field:'role_name', title:'角色名称', width:120},
+                {field:'role_desc', title:'角色描述', width:340},
                 {field:'add_time', title:'添加时间', width:160,templet:function (d) {
                         return layui.util.toDateString(d.add_time*1000,'yyyy-MM-dd HH:mm:ss');
                     }},
-                {field:'last_login_time', title:'上次登录时间', width:160,templet:function (d) {
-                        return layui.util.toDateString(d.last_login_time*1000,'yyyy-MM-dd HH:mm:ss');
-                    }},
-                {field:'last_login_ip', title:'登录IP', width:120},
-                {field:'login_num', title:'登录次数', width:80,align:'right'},
-                {field:'admin_status', title:'状态', width:80,templet:function (d) {
-                        return d.admin_status.name;
-                    }},
-                {field:'role', title:'角色', width:100,align:'left',templet:function (d) {
-                        return d.role.role_name;
-                    }},
-                {fixed: 'right', title:'操作', toolbar: '#toolTpl',width: 140},
+                {fixed: 'right', title:'操作', toolbar: '#toolTpl',width: 200},
             ]],
             done:function (res, curr, count){
                 window.curPage = curr;

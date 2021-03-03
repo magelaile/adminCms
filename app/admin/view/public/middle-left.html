@@ -12,7 +12,7 @@
                     {foreach $menu_one['children'] as $menu_child_first}
                     <li>
                         {if condition="empty($menu_child_first['children'])"}
-                        <a onclick="xadmin.add_tab('{$menu_child_first.auth_name}','{$menu_child_first._href}')">
+                        <a onclick="xadmin.add_tab('{$menu_child_first.auth_name}','{$menu_child_first._href}',true,'{$menu_one.auth_name}/{$menu_child_first.auth_name}')">
                             <i class="iconfont">&#xe6a7;</i>
                             <cite>{$menu_child_first['auth_name']}</cite>
                         </a>
@@ -25,7 +25,7 @@
                         <ul class="sub-menu">
                             {foreach $menu_child_first['children'] as $menu_child_second}
                             <li>
-                                <a onclick="xadmin.add_tab('{$menu_child_second.auth_name}','{$menu_child_second._href}')">
+                                <a onclick="xadmin.add_tab('{$menu_child_second.auth_name}','{$menu_child_second._href}',true,'{$menu_one.auth_name}/{$menu_child_first.auth_name}/{$menu_child_second.auth_name}')">
                                     <i class="iconfont">&#xe6a7;</i>
                                     <cite>{$menu_child_second['auth_name']}</cite></a>
                             </li>

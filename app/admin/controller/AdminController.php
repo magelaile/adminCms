@@ -75,9 +75,6 @@ class AdminController extends BaseController
         return response_json(fail_return());
     }
 
-
-
-
     //角色列表
     public function roleList() {
         $param = input();
@@ -86,12 +83,8 @@ class AdminController extends BaseController
 
             $logic_admin_role = new \app\admin\logic\AdminRoleLogic();
             $res = $logic_admin_role->getRoleList($param);
-            if(false===$res['status']) {
-                return ['code'=>-1,'msg'=>$res['msg'],'count'=>0,'data'=>[]];
-            }
-            return ['code'=>0,'msg'=>$res['msg'],'count'=>$res['count'],'data'=>$res['list']];
+            return response_json($res);
         }
-
 
         return View::fetch();
     }

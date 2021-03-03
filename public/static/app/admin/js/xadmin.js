@@ -9,7 +9,7 @@
 	Xadmin.prototype.init = function() {
 		var tab_list = this.get_data();
 		for(var i in tab_list){
-			this.add_lay_tab(tab_list[i].title,tab_list[i].url,i);
+			this.add_lay_tab(tab_list[i].title,tab_list[i].url,i,tab_list[i].nav_name);
 		}
 		element.tabChange('xbs_tab', i);
 	};
@@ -28,9 +28,9 @@
     }
   };
 
-	Xadmin.prototype.add_tab = function (title,url,is_refresh) {
+	Xadmin.prototype.add_tab = function (title,url,is_refresh,nav_name) {
 		var id = md5(url);//md5每个url
-
+        //console.log(nav_name);
 		//重复点击
 		for (var i = 0; i <$('.x-iframe').length; i++) {
             if($('.x-iframe').eq(i).attr('tab-id')==id){
@@ -41,8 +41,8 @@
             }
         };
 
-		this.add_lay_tab(title,url,id);
-	    this.set_data(title,url,id);
+		this.add_lay_tab(title,url,id,nav_name);
+	    this.set_data(title,url,id,nav_name);
 	    element.tabChange('xbs_tab', id);
 
 	}
@@ -57,10 +57,10 @@
     }
   }
 
-	Xadmin.prototype.add_lay_tab = function(title,url,id) {
+	Xadmin.prototype.add_lay_tab = function(title,url,id,nav_name) {
 		element.tabAdd('xbs_tab', {
 	       title: title 
-	        ,content: '<iframe tab-id="'+id+'" frameborder="0" src="'+url+'" scrolling="yes" class="x-iframe"></iframe>'
+	        ,content: '<iframe tab-id="'+id+'" tab-nav_name="'+nav_name+'" frameborder="0" src="'+url+'" scrolling="yes" class="x-iframe"></iframe>'
 	        ,id: id
 	    })
 	}
@@ -171,14 +171,14 @@
 	 * [set_data 增加某一项]
 	 * @param {[type]} id [description]
 	 */
-	Xadmin.prototype.set_data = function(title,url,id) {
+	Xadmin.prototype.set_data = function(title,url,id,nav_name) {
 
 		if(typeof is_remember!="undefined")
         	return false;
 
 		layui.data('tab_list', {
 		  key: id
-		  ,value: {title:title,url:url}
+		  ,value: {title:title,url:url,nav_name:nav_name}
 		});
 	};
 

@@ -1,0 +1,29 @@
+<div class="x-nav">
+    <span class="layui-breadcrumb" id="breadcrumb-container">
+        <!--<a href="javascript:void(0);">首页</a>
+        <a href="javascript:void(0);">演示</a>
+        <a href="javascript:void(0);">演示</a>
+        <a href="javascript:void(0);"><cite>导航元素</cite></a>-->
+    </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.0em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+    </a>
+</div>
+
+<script>
+    var nav_name = self.frameElement.getAttribute('tab-nav_name');
+    var nav_name_arr = nav_name.split('\/');
+
+    var breadcrumb_str = '<a>首页</a>';
+    breadcrumb_str += '<a>'+nav_name_arr[0]+'</a>';
+    if(nav_name_arr.length==2) {
+        breadcrumb_str += '<a><cite>'+nav_name_arr[1]+'</cite></a>';
+    }else if(nav_name_arr.length==3) {
+        breadcrumb_str += '<a>'+nav_name_arr[1]+'</a>';
+        breadcrumb_str += '<a><cite>'+nav_name_arr[2]+'</cite></a>';
+    }
+    document.getElementById('breadcrumb-container').innerHTML=breadcrumb_str;
+
+    //console.log(nav_name);
+    //console.log(breadcrumb_str);
+</script>

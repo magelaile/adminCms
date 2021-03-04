@@ -77,11 +77,11 @@ class AdminLogic
         //保存数据
         $model_admin = new \app\admin\model\Admin();
         $res_inser_id = $model_admin->insertGetId($data);
-        if($res_inser_id>0) {
-            return success_return();
+        if($res_inser_id<=0) {
+            return fail_return();
         }
 
-        return fail_return();
+        return success_return();
     }
 
 
@@ -121,7 +121,11 @@ class AdminLogic
         //unset($data['admin_id']);
 
         $model_admin = new \app\admin\model\Admin();
+        $res_update = $model_admin->update($data);
+        //p($res_update->toArray());
 
+        return success_return('保存成功');
+        /*
         try {
             // 这里是主体代码
             $res_update = $model_admin->update($data);
@@ -134,6 +138,7 @@ class AdminLogic
             //print_r($e->getMessage());die;
             return fail_return($e->getMessage());
         }
+        */
     }
 
     //删除管理员

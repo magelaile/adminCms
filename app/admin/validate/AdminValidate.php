@@ -6,7 +6,7 @@ use think\Validate;
 class AdminValidate extends Validate
 {
     protected $rule=[
-        'admin_id'      => 'gt:0',
+        'admin_id'      => ['require','gt:0'],
         'user_name'     => ['require','alphaNum','length'=>'5,10','isUserNameExist'],
         'phone_num'     => ['require','mobile'],
         'email'         => 'email',
@@ -32,8 +32,6 @@ class AdminValidate extends Validate
         //编辑
         'edit'  =>  ['admin_id','phone_num','email','role_id','password'],
     ];
-
-
 
 
     //用户名是否已经存在

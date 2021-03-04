@@ -34,9 +34,9 @@
 
 <script type="text/html" id="toolTpl">
     {{#  if(d.role_id > 1){ }}
-    <button type="button" onclick="xadmin.parentOpen('编辑角色',urlParseObj.main_url+'/admin/roleEdit/admin_id/{{d.admin_id}}.html',550,450);" class="layui-btn layui-btn-normal layui-btn-xs">编辑</button>
+    <button type="button" onclick="xadmin.parentOpen('编辑角色',urlParseObj.main_url+'/admin/roleEdit/role_id/{{d.role_id}}.html',550,450);" class="layui-btn layui-btn-normal layui-btn-xs">编辑</button>
     <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delOne">删除</button>
-    <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="authEdit">权限</button>
+    <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="editRoleAuth">权限</button>
     {{#  } }}
 </script>
 

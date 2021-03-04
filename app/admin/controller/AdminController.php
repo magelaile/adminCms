@@ -94,15 +94,31 @@ class AdminController extends BaseController
         if(request()->isPost()) {
             $param = input();
 
-            $logic_admin = new \app\admin\logic\AdminRoleLogic();
-            $res = $logic_admin->addRole($param);
+            $logic_admin_role = new \app\admin\logic\AdminRoleLogic();
+            $res = $logic_admin_role->addRole($param);
             return response_json($res);
         }
 
-        //角色列表
+        return View::fetch();
+    }
+
+    //编辑角色
+    public function roleEdit() {
+        if(request()->isPost()) {
+            $param = input();
+
+            $logic_admin_role = new \app\admin\logic\AdminRoleLogic();
+            $res = $logic_admin_role->editRole($param);
+            return response_json($res);
+        }
+
+        $role_id = input('role_id/d',0);
+
+        //角色信息
         $logic_admin_role = new \app\admin\logic\AdminRoleLogic();
-        $res_admin_role = $logic_admin_role->getRoleListAll(['field'=>"role_id,role_name"]);
-        View::assign('role_arr',$res_admin_role['data']);
+        $res_role_info = $logic_admin_role->getRoleInfo(['field'=>'role_id,role_name,role_desc','role_id'=>$role_id]);
+        //p($role_info);
+        View::assign('role_info',$res_role_info['data']);
 
         return View::fetch();
     }

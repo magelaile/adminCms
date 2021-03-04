@@ -157,7 +157,7 @@ class AdminLogic
 
         //排除超级管理员
         if(in_array('1',$ids_arr)) {
-            return fail_return('删除失败');
+            return fail_return('超级管理员不能删除');
         }
 
         $model_admin = new \app\admin\model\Admin();

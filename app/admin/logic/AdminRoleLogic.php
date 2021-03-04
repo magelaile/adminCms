@@ -74,7 +74,7 @@ class AdminRoleLogic
 
         //保存数据
         $model_admin_role = new \app\admin\model\AdminRole();
-        $res_inser_id = Db::name('admin_role')->insertGetId($data);
+        $res_inser_id = $model_admin_role->insertGetId($data);
         if($res_inser_id<=0) {
             return fail_return();
         }
@@ -83,24 +83,32 @@ class AdminRoleLogic
     }
 
     //编辑角色
-    public function editRole($param = []) {
-        $data = [
-            'role_id'   => $param['role_id'],
-            'role_name' => $param['role_name'],
-            'role_desc' => $param['role_desc']
-        ];
-        remove_space_and_eol($data);
+    public function delRole($param = []) {
+        //return success_return('删除成功');
 
-        $validate_admin_role = new \app\admin\validate\AdminRoleValidate();
-        $result = $validate_admin_role->scene('edit')->check($data);
-        if(false===$result){
-            return fail_return($validate_admin_role->getError());
+        $ids = trim($param['ids'],',');
+
+        remove_space_and_eol($ids);
+
+        if(empty($ids)) {
+            return fail_return('参数错误');
         }
 
-        //保存数据
+        $ids_arr = explode(',',$ids);
+
+        //排除超级管理员
+        if(in_array('1',$ids_arr)) {
+            return fail_return('超级管理员不能删除');
+        }
+
         $model_admin_role = new \app\admin\model\AdminRole();
-        $res_update = $model_admin_role->update($data);
-        return success_return();
+        $res_del = $model_admin_role->where('role_id','IN',$ids_arr)->delete();
+
+        if(false===$res_del) {
+            return fail_return('删除失败');
+        }
+
+        return success_return('删除成功');
     }
 
 

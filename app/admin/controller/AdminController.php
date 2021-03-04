@@ -123,4 +123,15 @@ class AdminController extends BaseController
         return View::fetch();
     }
 
+    //删除角色
+    public function roleDel() {
+        $param = input();
+        if(request()->isPost()) {
+            $logic_admin_role = new \app\admin\logic\AdminRoleLogic();
+            $res = $logic_admin_role->delRole($param);
+            return response_json($res);
+        }
+        return response_json(fail_return());
+    }
+
 }

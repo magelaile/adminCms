@@ -81,7 +81,7 @@
             if('delOne'===obj.event){
                 layer.confirm('确认删除吗？', function(index){
                     layer.close(index);
-                    delAdmin(obj.data.admin_id,function (){
+                    delRole(obj.data.role_id,function (){
                         obj.del();
                     });
                 });
@@ -114,14 +114,14 @@
         }
 
         //删除
-        function delAdmin(ids,callback) {
+        function delRole(ids,callback) {
             if(ids.length==0) {
                 parent.layer.alert('没有选中任何记录！');
                 return false;
             }
             parent.showLoading();
             httpTool.httpPost({
-                url:'{:url("/admin/adminDel")}',
+                url:'{:url("/admin/roleDel")}',
                 data:{ids:ids},
                 success:function (res){
                     if('1'==res.code) {

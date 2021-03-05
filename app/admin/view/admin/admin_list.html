@@ -55,8 +55,8 @@
 </script>
 
 <script type="text/html" id="toolTpl">
-    {{#  if(d.admin_id > 1){ }}
     <button type="button" onclick="xadmin.parentOpen('编辑管理员',urlParseObj.main_url+'/admin/adminEdit/admin_id/{{d.admin_id}}.html',550,450);" class="layui-btn layui-btn-normal layui-btn-xs">编辑</button>
+    {{#  if(d.admin_id > 1){ }}
     <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delOne">删除</button>
     {{#  } }}
 </script>

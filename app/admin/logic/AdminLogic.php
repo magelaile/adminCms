@@ -14,6 +14,7 @@ class AdminLogic
         ];
         set_where_if_not_empty($where,$param,'user_name','=');
         set_where_if_not_empty($where,$param,'phone_num','=');
+        set_where_if_not_empty($where,$param,'role_id','=');
         set_where_time($where,$param,'add_time','start_time','end_time');
 
         //关联模型
@@ -35,12 +36,14 @@ class AdminLogic
         //查询条件、字段
         $where = [];
         set_where_if_not_empty($where,$param,'admin_id','=');
+        set_where_if_not_empty($where,$param,'role_id','IN');
 
         $field = isset($param['field']) ? $param['field'] : "*";
 
         if(empty($where)) {
             return fail_return('查询条件错误!');
         }
+        //p($where);
 
         $model_admin = new \app\admin\model\Admin();
         $info = $model_admin->where($where)->field($field)->find();

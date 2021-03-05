@@ -15,6 +15,14 @@
                             <input type="tel" name="phone_num" placeholder="请输入手机号" autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
+                            <select name="role_id" lay-filter="search_sel_change" lay-search="">
+                                <option value="">请选择角色</option>
+                                {foreach $role_arr as $key=>$vo }
+                                <option value="{$vo.role_id}">{$vo.role_name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
                             <input class="layui-input" autocomplete="off" placeholder="开始日期" name="start_time" id="start_time">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
@@ -98,7 +106,7 @@
                         return d.admin_status.name;
                     }},
                 {field:'role', title:'角色', width:100,align:'left',templet:function (d) {
-                        return d.role.role_name;
+                        return d.role ? d.role.role_name : '未知角色';
                     }},
                 {fixed: 'right', title:'操作', toolbar: '#toolTpl',width: 140},
             ]],
@@ -148,6 +156,11 @@
             tableReload();
         });
 
+        //监听选择框检索条件变化
+        form.on('select(search_sel_change)', function(data) {
+            tableReload();
+        });
+
         //获取检索条件
         function getTableWhere() {
             //console.log('列表检索条件',form.val('search-form'));
@@ -186,7 +199,7 @@
                         if(typeof callback=='function') callback();
 
                     }else{
-                        parentlayer.alert(res.msg, {icon : 5});
+                        parent.layer.alert(res.msg, {icon : 5});
                     }
                 },
                 complete:function (res) {

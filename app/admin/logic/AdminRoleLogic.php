@@ -101,6 +101,14 @@ class AdminRoleLogic
             return fail_return('超级管理员不能删除');
         }
 
+        //角色是否正在被使用中
+        $logic_admin = new \app\admin\logic\AdminLogic();
+        $res_role_info = $logic_admin->getAdminInfo(['field'=>'user_name','role_id'=>$ids_arr]);
+        //p($res_role_info['data']);
+        if(!empty($res_role_info['data'])) {
+            return fail_return('该角色正在被管理员：'.$res_role_info['data']['user_name'].' 使用中');
+        }
+
         $model_admin_role = new \app\admin\model\AdminRole();
         $res_del = $model_admin_role->where('role_id','IN',$ids_arr)->delete();
 

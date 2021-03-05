@@ -30,7 +30,7 @@ function set_where_if_not_empty(&$where,$param,$param_filed,$condition,$where_fi
         if('LIKE'==strtoupper($condition)) {
             $where[] = [$where_filed,'LIKE','%'.trim($param[$param_filed]).'%'];
         }else{
-            $where[] = [$where_filed,$condition,trim($param[$param_filed])];
+            $where[] = [$where_filed,$condition,$param[$param_filed]];
         }
     }
 }

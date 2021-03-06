@@ -140,4 +140,44 @@ class AdminController extends BaseController
         return response_json(fail_return());
     }
 
+    //菜单权限列表
+    public function meunAuthList() {
+        $param = input();
+
+        if(request()->isPost()) {
+
+            $logic_admin_auth = new \app\admin\logic\AdminAuthLogic();
+            $res = $logic_admin_auth->getMeunAuthList($param);
+            return response_json($res);
+        }
+
+
+        //$logic_admin_auth = new \app\admin\logic\AdminAuthLogic();
+        //$res = $logic_admin_auth->getMeunAuthList($param);
+
+        return View::fetch();
+    }
+
+    //菜单权限添加
+    public function meunAuthAdd() {
+
+
+        return View::fetch();
+    }
+
+    //菜单权限编辑
+    public function meunAuthEdit() {
+
+
+        return View::fetch();
+    }
+
+    //菜单权限删除
+    public function meunAuthDel() {
+
+
+        return View::fetch();
+    }
+
+
 }

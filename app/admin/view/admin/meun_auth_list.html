@@ -1,0 +1,538 @@
+{layout name="public/layout" /}
+
+{include file="public/navigation" /}
+
+<style>
+
+    .tree-table-hide {
+        display: none;
+    }
+
+    .tree-table-close .tree-table-arrow:before {
+        content: "\e623";
+    }
+    .tree-table-open .tree-table-arrow:before{
+        content: "\e625";
+    }
+    .tree-table-indent {
+        margin-right: 5px;
+        padding-left: 16px;
+    }
+    .tree-table-tr-name {
+        cursor: pointer;
+    }
+</style>
+
+<div class="layui-fluid my-no-padding">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body my-no-padding-bottom">
+                    <form class="layui-form" lay-filter="search-form">
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="user_name" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="tel" name="phone_num" placeholder="请输入手机号" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button type="button" class="layui-btn" id="search-btn"><i class="layui-icon layui-icon-search"></i></button>
+                        </div>
+                    </form>
+                </div>
+                <div class="layui-card-body my-no-padding-top">
+                    <table class="layui-hide" id="table" lay-filter="table"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/html" id="toolBarTpl">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" onclick="xadmin.parentOpen('添加管理员',urlParseObj.main_url+'/admin/adminAdd.html',550,450)">
+            <i class="layui-icon layui-icon-add-circle-fine"></i>新增
+        </button>
+        <button class="layui-btn layui-btn-sm" onclick="openCloseAll(1)">
+            <i class="layui-icon layui-icon-spread-left"></i>全部展开
+        </button>
+        <button class="layui-btn layui-btn-sm" onclick="openCloseAll(2)">
+            <i class="layui-icon layui-icon-shrink-right"></i>全部折叠
+        </button>
+    </div>
+</script>
+
+<script type="text/html" id="toolTpl">
+    <button type="button" onclick="xadmin.parentOpen('编辑管理员',urlParseObj.main_url+'/admin/adminEdit/admin_id/{{d.admin_id}}.html',550,450);" class="layui-btn layui-btn-normal layui-btn-xs">编辑</button>
+    {{#  if(d.admin_id > 1){ }}
+    <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delOne">删除</button>
+    {{#  } }}
+</script>
+
+
+<script>
+
+    layui.use([ 'table', 'form', 'laydate'], function() {
+        var table   = layui.table;
+        var form    = layui.form;
+        var laydate = layui.laydate;
+
+        //日期
+        laydate.render({
+            elem : '#start_time'
+        });
+        laydate.render({
+            elem : '#end_time'
+        });
+
+        //数据表格
+        var tableId = tablefilter = 'table';
+        var initTable = table.render({
+            elem: '#'+tableId,
+            url:"{:url('/admin/meunAuthList')}",
+            method: 'post',
+            where: getTableWhere(),
+            height: layuiTableInitCfg.height /*高度设置*/,response:layuiTableInitCfg.response /*响应状态码设置*/,
+            toolbar: '#toolBarTpl', //开启头部工具栏，并为其绑定左侧模板
+            defaultToolbar: [],
+            cols: [[
+                {field:'auth_id', title:'ID', width:80, align:'center'},
+                {field:'auth_name', title:'名称', width:300,templet:function (row){
+
+                        //默认样式以及缩进设置
+                        var click_event_class   = 'click-event'; //点击事件样式
+                        var arrow               = '<i class="tree-table-arrow layui-icon"></i>'; //名称前的箭头
+                        var dafault_icon        = '<i class="layui-icon layui-icon-layer"></i>'; //名称前的箭头
+
+                        //auth_level ：1=级菜单 2=级菜单 3=级菜单关闭 4=级菜单隐藏
+                        if(4==row.auth_level) {
+                            arrow               = '';
+                            click_event_class   = '';
+                            dafault_icon        = '<i class="layui-icon layui-icon-file"></i>';
+                        }
+
+                        //名称缩进处理
+                        var  indent_spans = '';
+                        for (var i=1;i<row.auth_level;i++) {
+                            indent_spans += '<span class="tree-table-indent"></span>';
+                        }
+
+                        var content = `<span class="tree-table-tr-name ${click_event_class}">${arrow} ${dafault_icon} ${row.auth_name} </span>`;
+                        return indent_spans + content;
+                    }},
+                {field:'auth_c', title:'控制器方法', width:170, templet:function (row){
+                        return row.auth_c + ' / ' + row.auth_a;
+                    }},
+                {field:'auth_level', title:'类型', width:170, align:'center'},
+                {field:'sort', title:'排序', width:80, align:'center'},
+                //{fixed: 'right', title:'操作', toolbar: '#toolTpl',width: 140},
+            ]],
+            done:function (res, curr, count){
+
+                //根据 tableId 获取该表格的 cols 设置
+                var table_cols = [];
+                var cols = table.eachCols(tableId,function (index, col){
+                    table_cols.push(col);
+                });
+                //console.log(table_cols);
+
+                //重新组装表格所有的行
+                var tableMainHtml = '';
+                for(var i=0; i<res.data.length;i++) {
+                    var row = res.data[i];
+                    var index = i;
+                    var tr = getTr(row,index,table_cols);
+                    tableMainHtml += tr;
+                }
+                /*res.data.map(function (item,index,arr){
+                    var tr = getTr(item,index,table_cols);
+                    tableMainHtml += tr;
+                });*/
+
+                //重新赋值
+                $(".layui-table-main tbody").html(tableMainHtml);
+
+
+                /* 表格行数据组装
+                 * item 行数据
+                 * index 行index
+                 * table_cols 表格的 cols 设置
+                 */
+                function getTr(item,index,table_cols) {
+
+                    //自定义样式
+                    var open_close_class    = 'tree-table-open'; //展开关闭样式
+
+                    //打开关闭样式，默认打开 1=级菜单 2=级菜单 3=级菜单关闭 4=级菜单隐藏
+                    if(1==item.auth_level) {
+                        open_close_class    = 'tree-table-open'; //打开
+                    } else if(2==item.auth_level){
+                        open_close_class    = 'tree-table-open'; //打开
+                    }else if(3==item.auth_level) {
+                        open_close_class    = 'tree-table-close';//关闭
+                    } else if(4==item.auth_level) {
+                        open_close_class    = 'tree-table-hide';//隐藏
+                    }
+
+                    //名称缩进处理
+                    var  indent_spans = '';
+                    for (var i=1;i<item.auth_level;i++) {
+                        indent_spans += '<span class="tree-table-indent"></span>';
+                    }
+
+                    //组装行数据
+                    var tr_str = `<tr data-index="${index}" class="${open_close_class}" data-id="${item.auth_id}" data-pidstr="${item.auth_pid_str}" data-indent="${item.auth_level}">`;
+                    for(var j=0; j<table_cols.length; j++) {
+                        var col = table_cols[j];
+
+                        //对其方式
+                        var align = col.align ? col.align : '';
+
+                        //内容获取
+                        var content = '';
+                        if (col.templet && typeof col.templet == "function") {
+                            content = col.templet(item);
+                        } else if (eval("item." + col.field)) {
+                            content = eval("item." + col.field);
+                        }
+
+                        //单元格
+                        var td_str=`<td data-field="${col.field}" data-key="1-${index}-${j}" align="${align}" class="">
+                                        <div class="layui-table-cell laytable-cell-1-${index}-${j}">${content}</div>
+                                    </td>`;
+
+                        tr_str += td_str;
+                    }
+                    tr_str += `</tr>`;
+
+                    return tr_str;
+
+
+                    /*
+                    var open_close_class    = 'tree-table-open'; //展开关闭样式
+                    var click_event_class   = 'click-event'; //点击事件样式
+                    var arrow               = '<i class="tree-table-arrow layui-icon"></i>'; //名称前的箭头
+                    var dafault_icon        = '<i class="layui-icon layui-icon-layer"></i>'; //名称前的箭头
+
+                    //打开关闭样式，默认打开 1=级菜单 2=级菜单 3=级菜单关闭 4=级菜单隐藏
+                    if(1==item.auth_level) {
+                        open_close_class    = 'tree-table-open'; //打开
+                    } else if(2==item.auth_level){
+                        open_close_class    = 'tree-table-open'; //打开
+                    }else if(3==item.auth_level) {
+                        open_close_class    = 'tree-table-close';//关闭
+                    } else if(4==item.auth_level) {
+                        open_close_class    = 'tree-table-hide';//隐藏
+                        arrow               = '';
+                        click_event_class   = '';
+                        dafault_icon        = '<i class="layui-icon layui-icon-file"></i>';
+                    }
+
+                    //名称缩进处理
+                    var  indent_spans = '';
+                    for (var i=1;i<item.auth_level;i++) {
+                        indent_spans += '<span class="tree-table-indent"></span>';
+                    }
+
+                    return `<tr data-index="${index}" class="${open_close_class}" data-id="${item.auth_id}" data-pidstr="${item.auth_pid_str}" data-indent="${item.auth_level}">
+                        <td data-field="auth_id" data-key="1-0-0" align="center" class="">
+                            <div class="layui-table-cell laytable-cell-1-0-0">${item.auth_id}</div>
+                        </td>
+                        <td data-field="auth_name" data-key="1-0-1" class="">
+                            <div class="layui-table-cell laytable-cell-1-0-1">
+                                ${indent_spans}
+                                <span class="tree-table-tr-name ${click_event_class}">
+                                    ${arrow} ${dafault_icon} ${item.auth_name}
+                                </span>
+                            </div>
+                        </td>
+                        <td data-field="auth_c" data-key="1-0-2" class="">
+                            <div class="layui-table-cell laytable-cell-1-0-2">${item.auth_c}</div>
+                        </td>
+                        <td data-field="auth_level" data-key="1-0-3" class="">
+                            <div class="layui-table-cell laytable-cell-1-0-3">${item.auth_level}</div>
+                        </td>
+                        <td data-field="sort" data-key="1-0-4" class="">
+                            <div class="layui-table-cell laytable-cell-1-0-4">${item.sort}</div>
+                        </td>
+                    </tr>`;
+
+                     */
+                }
+
+            }
+
+        });
+
+
+        //点击展开和关闭
+        $("table").on("click", "tr .click-event", function(event){
+            var tr          = $(this).parents('tr');
+            var tr_id       = $(tr).data('id');
+            var tr_indent   = $(tr).data('indent');
+
+            $open_close_flag = $(tr).hasClass("tree-table-open");
+
+            if('1'==tr_indent) {
+                var first_tr_id     = tr_id;
+                var first_tr_indent = tr_indent;
+                if($open_close_flag) { //进行隐藏二级，如果二级是展开的那么还需要隐藏三级，如果三级是展开的那么还需要隐藏四级
+
+                    //找到二级菜单进行隐藏,如果二级是展开的那么还需要隐藏三级
+                    var second_tr_indent = first_tr_indent + 1;
+                    $("tr[data-pidstr*='-"+first_tr_id+"-'][data-indent='"+second_tr_indent+"']").each(function(){
+                        //二级是展开的，那么先需要隐藏三级
+                        $second_open_close_flag = $(this).hasClass("tree-table-open");
+                        if($second_open_close_flag) {
+                            var second_tr_id = $(this).data('id');
+                            var second_tr_indent = $(this).data('indent');
+
+                            //找到三级菜单进行隐藏，如果三级是展开的那么还需要隐藏四级
+                            var third_tr_indent = second_tr_indent + 1;
+                            $("tr[data-pidstr*='-"+second_tr_id+"-'][data-indent='"+third_tr_indent+"']").each(function(){
+                                //三级是展开的，那么先需要隐藏四级
+                                $third_open_close_flag = $(this).hasClass("tree-table-open");
+                                if($third_open_close_flag) {
+                                    var third_tr_id = $(this).data('id');
+                                    var third_tr_indent = $(this).data('indent');
+                                    //找到四级菜单进行隐藏
+                                    var four_tr_indent = third_tr_indent + 1;
+                                    $("tr[data-pidstr*='-"+third_tr_id+"-'][data-indent='"+four_tr_indent+"']").each(function(){
+                                        $(this).addClass('tree-table-hide');
+                                    });
+                                }
+
+                                //隐藏三级
+                                $(this).addClass('tree-table-hide');
+                            });
+                        }
+                        //隐藏二级
+                        $(this).addClass('tree-table-hide');
+                    });
+
+                    //修改一级为关闭状态
+                    $(tr).removeClass('tree-table-open').addClass('tree-table-close');
+
+                }else{ //进行显示二级，如果二级是展开的那么还需要显示三级，如果三级是展开的那么还需要显示四级
+
+                    //找到二级菜单进行隐藏,如果二级是展开的那么还需要隐藏三级
+                    var second_tr_indent = first_tr_indent + 1;
+                    $("tr[data-pidstr*='-"+first_tr_id+"-'][data-indent='"+second_tr_indent+"']").each(function(){
+                        //二级是展开的，那么先需要显示三级
+                        $second_open_close_flag = $(this).hasClass("tree-table-open");
+                        if($second_open_close_flag) {
+                            var second_tr_id = $(this).data('id');
+                            var second_tr_indent = $(this).data('indent');
+
+                            //找到三级菜单进行隐藏，如果三级是展开的那么还需要隐藏四级
+                            var third_tr_indent = second_tr_indent + 1;
+                            $("tr[data-pidstr*='-"+second_tr_id+"-'][data-indent='"+third_tr_indent+"']").each(function(){
+                                //三级是展开的，那么先需要隐藏四级
+                                $third_open_close_flag = $(this).hasClass("tree-table-open");
+                                if($third_open_close_flag) {
+                                    var third_tr_id = $(this).data('id');
+                                    var third_tr_indent = $(this).data('indent');
+                                    //找到四级菜单进行隐藏
+                                    var four_tr_indent = third_tr_indent + 1;
+                                    $("tr[data-pidstr*='-"+third_tr_id+"-'][data-indent='"+four_tr_indent+"']").each(function(){
+                                        $(this).removeClass('tree-table-hide');
+                                    });
+                                }
+
+                                //隐藏三级
+                                $(this).removeClass('tree-table-hide');
+                            });
+                        }
+                        //显示二级
+                        $(this).removeClass('tree-table-hide');
+                    });
+
+                    //修改一级为展开状态
+                    $(tr).removeClass('tree-table-close').addClass('tree-table-open');
+
+                }
+
+            }else if('2'==tr_indent) {
+                var second_tr_indent = tr_indent;
+                if($open_close_flag) { //进行隐藏三级，如果三级是展开的那么还需要隐藏四级
+                    //找到三级菜单
+                    var third_tr_indent = second_tr_indent + 1;
+                    $("tr[data-pidstr*='-"+tr_id+"-'][data-indent='"+third_tr_indent+"']").each(function(){
+                        //三级是展开的，那么先需要隐藏四级
+                        $third_open_close_flag = $(this).hasClass("tree-table-open");
+                        if($third_open_close_flag) {
+                            var third_tr_id = $(this).data('id');
+                            var third_tr_indent = $(this).data('indent');
+                            //找到四级菜单进行隐藏
+                            var four_tr_indent = third_tr_indent + 1;
+                            $("tr[data-pidstr*='-"+third_tr_id+"-'][data-indent='"+four_tr_indent+"']").each(function(){
+                                $(this).addClass('tree-table-hide');
+                            });
+                        }
+                        $(this).addClass('tree-table-hide');
+                    });
+
+                    //修改二级为关闭状态
+                    $(tr).addClass('tree-table-close').removeClass('tree-table-open');
+
+                }else{ //进行显示三级，如果三级是展开的那么还需要显示四级
+                    //找到三级
+                    var third_tr_indent = second_tr_indent + 1;
+                    $("tr[data-pidstr*='-"+tr_id+"-'][data-indent='"+third_tr_indent+"']").each(function(){
+                        //三级是展开的，那么先需要隐藏四级
+                        $third_open_close_flag = $(this).hasClass("tree-table-open");
+                        if($third_open_close_flag) {
+                            var third_tr_id = $(this).data('id');
+                            var third_tr_indent = $(this).data('indent');
+                            //找到四级菜单进行显示
+                            var four_tr_indent = third_tr_indent + 1;
+                            $("tr[data-pidstr*='-"+third_tr_id+"-'][data-indent='"+four_tr_indent+"']").each(function(){
+                                $(this).removeClass('tree-table-hide');
+                            });
+                        }
+                        $(this).removeClass('tree-table-hide');
+                    });
+
+                    //修改二级为展开状态
+                    $(tr).addClass('tree-table-open').removeClass('tree-table-close');
+                }
+
+            }else if('3'==tr_indent) {
+
+                var third_tr_indent = tr_indent;
+
+                if($open_close_flag) { //进行隐藏四级
+                    //找到四级菜单
+                    var four_tr_indent = third_tr_indent + 1;
+                    $("tr[data-pidstr*='-"+tr_id+"-'][data-indent='"+four_tr_indent+"']").each(function(){
+                        $(this).addClass('tree-table-hide');
+                    });
+
+                    //修改三级级为关闭状态
+                    $(tr).addClass('tree-table-close').removeClass('tree-table-open');
+                }else{ //进行显示四级
+                    //找到四级菜单
+                    var four_tr_indent = third_tr_indent + 1;
+                    $("tr[data-pidstr*='-"+tr_id+"-'][data-indent='"+four_tr_indent+"']").each(function(){
+                        $(this).removeClass('tree-table-hide');
+                    });
+
+                    //修改三级级为展开状态
+                    $(tr).addClass('tree-table-open').removeClass('tree-table-close');
+                }
+            }
+
+        });
+
+        //全部展开
+        window.openCloseAll = function (type) {
+            if(1==type) {
+                //全部展开
+                $(".layui-table-main tbody .tree-table-hide").each(function (){
+                    $(this).removeClass('tree-table-hide');
+                    //将一级二级三级设置为打开状态
+                    $(".layui-table-main tbody tr[data-indent='1'],.layui-table-main tbody tr[data-indent='2'],.layui-table-main tbody tr[data-indent='3']").each(function (){
+                        $(this).addClass('tree-table-open').removeClass('tree-table-close');
+                    });
+                });
+            }else{
+                //全部折叠
+                //先将四级隐藏
+                $(".layui-table-main tbody tr[data-indent='4']").each(function (){
+                    $(this).addClass('tree-table-hide');
+                });
+                //将二三级进行关闭并隐藏
+                $(".layui-table-main tbody tr[data-indent='2'],.layui-table-main tbody tr[data-indent='3']").each(function (){
+                    $(this).addClass('tree-table-hide').addClass('tree-table-close').removeClass('tree-table-open');
+                });
+
+                //将一三级进行关闭
+                $(".layui-table-main tbody tr[data-indent='1']").each(function (){
+                    $(this).addClass('tree-table-close').removeClass('tree-table-open');
+                });
+
+            }
+        }
+
+
+        //监听行工具事件
+        table.on('tool('+tablefilter+')', function(obj){
+
+            if('delOne'===obj.event){
+                layer.confirm('确认删除吗？', function(index){
+                    layer.close(index);
+                    delAdmin(obj.data.admin_id,function (){
+                        obj.del();
+                    });
+                });
+            }
+        });
+
+        //监听搜索
+        $('#search-btn').click(function() {
+            tableReload();
+        });
+
+        //监听选择框检索条件变化
+        form.on('select(search_sel_change)', function(data) {
+            tableReload();
+        });
+
+        //获取检索条件
+        function getTableWhere() {
+            //console.log('列表检索条件',form.val('search-form'));
+            return form.val('search-form');
+        }
+
+        //重载列表
+        window.tableReload = function (cur_page) {
+            //默认重载当前页
+            if(!cur_page || cur_page<=0) {
+                cur_page = window.curPage;
+            }
+            initTable.reload({
+                where: getTableWhere(),
+                page: {
+                    curr: cur_page,  //重新加载当前页
+                }
+            });
+        }
+
+        //监听全部展开
+        $('#closeAll').click(function (){
+            $("tr[data-pidstr^='-98-'][data-indent='2']").each(function(){
+                console.log(46464);
+            });
+
+        });
+
+        //删除
+        function meunAuthDel(ids,callback) {
+            if(ids.length==0) {
+                parent.layer.alert('没有选中任何记录！');
+                return false;
+            }
+            parent.showLoading();
+            httpTool.httpPost({
+                url:'{:url("/admin/meunAuthDel")}',
+                data:{ids:ids},
+                success:function (res){
+                    if('1'==res.code) {
+                        parent.layer.msg(res.msg);
+
+                        //回调函数
+                        if(typeof callback=='function') callback();
+
+                    }else{
+                        parent.layer.alert(res.msg, {icon : 5});
+                    }
+                },
+                complete:function (res) {
+                    parent.closeLoading();
+                }
+            });
+        }
+
+    });
+</script>

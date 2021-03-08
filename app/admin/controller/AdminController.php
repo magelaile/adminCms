@@ -141,7 +141,7 @@ class AdminController extends BaseController
     }
 
     //菜单权限列表
-    public function meunAuthList() {
+    public function menuAuthList() {
         $param = input();
 
         if(request()->isPost()) {
@@ -159,7 +159,7 @@ class AdminController extends BaseController
     }
 
     //菜单权限添加
-    public function meunAuthAdd() {
+    public function menuAuthAdd() {
 
         if(request()->isPost()) {
             $param = input();
@@ -178,6 +178,10 @@ class AdminController extends BaseController
                     $param['auth_levels'] = '1,2,3';
                 }
                 $res = $logic_admin_auth->getMeunAuthList($param);
+
+                View::assign('menu_auth_list',$res['data']);
+                $tpl = View::fetch('ajax/');
+
                 return response_json($res);
 
             }else if('parent_menu'==$data_type) {

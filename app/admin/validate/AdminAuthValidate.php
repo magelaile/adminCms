@@ -7,7 +7,7 @@ class AdminAuthValidate extends Validate
 {
     protected $rule=[
         'auth_id'       => ['require','gt:0'],
-        'auth_type'     => ['require','gt:0'],
+        'auth_type'     => ['require','gt:0','checkParentInfo'],
         'auth_name'     => ['require','chsAlphaNum','length'=>'2,10'],
         'auth_pid'      => ['require','gt:0'],
         'auth_c'        => ['require','chsAlphaNum'],
@@ -17,7 +17,7 @@ class AdminAuthValidate extends Validate
 
 
     protected $message=[
-        'auth_id'               => '该记录信息有误',
+        'auth_id'               => '该记录信息有误~',
         'auth_type'             => '请选择类型',
         'auth_name.require'     => '账号不能为空',
         'auth_name.chsAlphaNum' => '账号只能为中文、字母和数字',
@@ -54,25 +54,20 @@ class AdminAuthValidate extends Validate
     /* 判断上级
      * 添加导航 那么上级必须是模块
      * 添加菜单 那么上级必须是模块或者导航
-     * 添加权限 那么上级必须是菜单
+     * 添加节点 那么上级必须是菜单
     */
-    protected function checkParentInfo($value,$rule,&$data) {
+    protected function checkParentInfo($value,$rule,$data) {
+        if(2==$data['auth_type'] && $data['auth_p_type']!=1) {
+            return '添加导航，请选择模块作为上级';
 
-    }
+        }else if(3==$data['auth_type'] && ($data['auth_p_type']!=2 ||$data['auth_p_type']!=1)) {
+            return '添加菜单，请选择导航或者模块作为上级';
 
-
-
-    //用户名是否已经存在
-    /*protected function isUserNameExist($value,$rule,$data) {
-        $model_admin = new \app\admin\model\Admin();
-        $count = $model_admin->where('user_name','=',$value)->count('admin_id');
-        if($count>0) {
-            return '该账号已经存在~';
+        }else if(4==$data['auth_type'] && ($data['auth_p_type']!=2 ||$data['auth_p_type']!=1)) {
+            return '添加节点，请选择菜单作为上级';
         }
-
         return true;
-    }*/
-
+    }
 
 }
 

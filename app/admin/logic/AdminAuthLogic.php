@@ -132,10 +132,17 @@ class AdminAuthLogic {
 
         remove_space_and_eol($data);
 
-        $validate_admin = new \app\admin\validate\AdminAuthValidate();
-        $result = $validate_admin->scene('add_typeid_'.$data['type_id'])->check($data);
+        //上级信息
+        if($data['auth_pid']>0) {
+            $parent_auth_info = $this->getAuthInfo(['auth_id'=>$data['auth_pid']]);
+            $data['auth_p_type'] = $parent_auth_info['data']['auth_type'];
+        }
+        //p($parent_auth_info);
+
+        $validate_admin_auth = new \app\admin\validate\AdminAuthValidate();
+        $result = $validate_admin_auth->scene('add_typeid_'.$data['auth_type'])->check($data);
         if(false===$result){
-            return fail_return($validate_admin->getError());
+            return fail_return($validate_admin_auth->getError());
         }
 
         p($param);
@@ -163,4 +170,27 @@ class AdminAuthLogic {
     public function delMeunAuth($param = []) {
 
     }
+
+    /*获取权限菜单信息
+    */
+    public function getAuthInfo($param = []) {
+
+        //查询条件、字段
+        $where = [];
+        set_where_if_not_empty($where,$param,'auth_id','=');
+        //p($where);
+        $field = isset($param['field']) ? $param['field'] : "*";
+
+        if(empty($where)) {
+            return fail_return('查询条件错误!');
+        }
+
+        $model_admin_auth = new \app\admin\model\AdminAuth();
+        $info = $model_admin_auth->where($where)->field($field)->find();
+
+        $info = !empty($info) ? $info->toArray() : [];
+
+        return success_return('获取成功!',$info);
+    }
+
 }

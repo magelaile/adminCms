@@ -37,13 +37,12 @@ class AdminLogic
         $where = [];
         set_where_if_not_empty($where,$param,'admin_id','=');
         set_where_if_not_empty($where,$param,'role_id','IN');
-
+        //p($where);
         $field = isset($param['field']) ? $param['field'] : "*";
 
         if(empty($where)) {
             return fail_return('查询条件错误!');
         }
-        //p($where);
 
         $model_admin = new \app\admin\model\Admin();
         $info = $model_admin->where($where)->field($field)->find();

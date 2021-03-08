@@ -4,6 +4,9 @@
     .layui-form-select dl dd {
         line-height: 28px;
     }
+    .layui-form-select dl {
+        max-height: 200px;
+    }
 </style>
 
 <div class="layui-fluid">
@@ -54,7 +57,7 @@
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label">控制器方法</label>
                 <div class="layui-input-inline">
-                    <select name="auth_a" lay-search="">
+                    <select name="auth_a" lay-search="" id="auth_a">
                         <option value="">选择控制器方法</option>
                     </select>
 
@@ -66,13 +69,15 @@
                 <div class="layui-input-inline">
                     <input type="text" value="50" name="sort" lay-verify="number" autocomplete="off" class="layui-input">
                 </div>
+                <div class="layui-form-mid layui-word-aux"> <span class="x-red">*</span>数值越大越靠前</div>
             </div>
 
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label">图标class名称</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="icon-class" name="icon_class" autocomplete="off" class="layui-input">
+                    <input type="text" value="" name="icon_class" placeholder="如：layui-icon-username" autocomplete="off" class="layui-input">
                 </div>
+                <div class="layui-form-mid layui-word-aux"> <span class="x-red">*</span>Layui图标库中的图标样式</div>
             </div>
 
 
@@ -102,34 +107,25 @@
 
         //监听提交
         form.on('submit(submit)',function (data){
-            console.log(data);
-            showLoading('保存中...');
-            httpTool.httpPost({
-                url:'{:url("/admin/menuAuthAdd")}',
-                data:data.field,
-                success:function (res){
-                    if('1'==res.code) {
-                        xadmin.close();
-                        //刷新子页面列表
-                        parent.$("iframe[tab-id="+parent.iframeTabId+"]")[0].contentWindow.tableReload(1);
+            //console.log(data);
 
-                    }else{
-                        layer.alert(res.msg, {icon : 5});
-                    }
-                },
-                complete:function (res) {
-                    closeLoading();
-                }
-            });
+            //保存数据
+            getOrSaveData(data.field,function (res){
+                xadmin.close();
+                //刷新子页面列表
+                parent.$("iframe[tab-id="+parent.iframeTabId+"]")[0].contentWindow.tableReload(1);
+            },'保存中...');
 
             return false;
         });
 
         //监听类型选择
         form.on('select(auth_type)',function (data){
-            console.log(data);
+            //console.log(data);
             if(!data.value || '1'==data.value) {
                 $('#auth_pid').html('');
+                $('#auth_c').html('');
+                $('#auth_a').html('');
                 form.render('select');
                 return false;
             }
@@ -142,13 +138,19 @@
 
         //监听控制器选择
         form.on('select(auth_c)',function (data){
-            console.log(data);
+            //console.log(data);
             if(!data.value) {
                 return false;
             }
             //获取数据
             getOrSaveData({data_type:'controller_action',auth_c:data.value},function (res){
                 var sel_option = '<option value="">选择控制器方法</option>'
+                res.data.map(function (value,index,arr){
+                    sel_option += `<option value="${value}">${value}</option>`;
+                });
+                //console.log(sel_option);
+                $('#auth_a').html(sel_option);
+                form.render('select');
             });
         });
 

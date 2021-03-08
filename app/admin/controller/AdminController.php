@@ -192,23 +192,15 @@ class AdminController extends BaseController
                 $diffArray   = array_diff($contrl,$base_contrl);
                 //将方法名统一转换为小写
                 //$diffArray  = array_map('strtolower',$diffArray);
+                //p($diffArray);
 
-                p($diffArray);
-
-                return response_json(success_return('获取成功',$result));
+                return response_json(success_return('获取成功',$diffArray));
 
             }else{ //保存数据
                 $res = $logic_admin_auth->addMenuAuth($param);
                 return response_json($res);
             }
         }
-
-
-
-
-
-
-
 
         //获取控制器列表
         $exceptFileName = ['.','..','.svn'];
@@ -223,14 +215,14 @@ class AdminController extends BaseController
     }
 
     //菜单权限编辑
-    public function meunAuthEdit() {
+    public function menuAuthEdit() {
 
 
         return View::fetch();
     }
 
     //菜单权限删除
-    public function meunAuthDel() {
+    public function menuAuthDel() {
 
 
         return View::fetch();

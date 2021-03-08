@@ -33,7 +33,7 @@ class AdminAuthLogic {
         $field = "*";
 
         $model_admin_auth = new \app\admin\model\AdminAuth();
-        $lists = $model_admin_auth->field($field)->where($where)->order('auth_level,sort ASC')->select()->toArray();
+        $lists = $model_admin_auth->field($field)->where($where)->order('auth_level ASC,sort DESC')->select()->toArray();
 
         $menu_lists = [];
 
@@ -129,20 +129,40 @@ class AdminAuthLogic {
         remove_space_and_eol($data);
 
         //上级信息
+        $data['auth_p_type'] = 0;
+        $data['auth_level'] = 1;
+        $data['auth_pid_str'] = '-';
         if($data['auth_pid']>0) {
             $parent_auth_info = $this->getAuthInfo(['auth_id'=>$data['auth_pid']]);
             $data['auth_p_type'] = $parent_auth_info['data']['auth_type'];
+            $data['auth_pid_str'] = $parent_auth_info['auth_pid_str'].$parent_auth_info['auth_id'].'-';
         }
-        //p($parent_auth_info);
 
+        //权限层级
+        if(1==$data['auth_type']) { //模块
+            $data['auth_level'] = 1;
+        }else if (2==$data['auth_type']) { //导航
+            $data['auth_level'] = 2;
+        }else if (3==$data['auth_type']) { //菜单
+            if(1==$data['auth_p_type']) {
+                $data['auth_level'] = 2; //二级菜单
+            }else if(2==$data['auth_p_type']){
+                $data['auth_level'] = 3; //二级菜单
+            }
+        }else if(4==$data['auth_type']) { //节点
+            $data['auth_level'] = 4;
+        }
+
+        //验证
         $validate_admin_auth = new \app\admin\validate\AdminAuthValidate();
         $result = $validate_admin_auth->scene('add_typeid_'.$data['auth_type'])->check($data);
         if(false===$result){
             return fail_return($validate_admin_auth->getError());
         }
+        p($data);
 
-        p($param);
-
+        empty($data['auth_c']) && $data['auth_c'] = '#';
+        empty($data['auth_a']) && $data['auth_a'] = '#';
 
         //保存数据
         $model_admin_auth = new \app\admin\model\AdminAuth();
@@ -152,7 +172,6 @@ class AdminAuthLogic {
         }
 
         return success_return();
-
     }
 
     /*权限编辑

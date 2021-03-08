@@ -30,10 +30,7 @@
                 <div class="layui-card-body my-no-padding-bottom">
                     <form class="layui-form" lay-filter="search-form">
                         <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="user_name" placeholder="请输入用户名" autocomplete="off" class="layui-input">
-                        </div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <input type="tel" name="phone_num" placeholder="请输入手机号" autocomplete="off" class="layui-input">
+                            <input type="text" name="user_name" placeholder="请输入名称" autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
                             <button type="button" class="layui-btn" id="search-btn"><i class="layui-icon layui-icon-search"></i></button>
@@ -51,7 +48,7 @@
 
 <script type="text/html" id="toolBarTpl">
     <div class="layui-btn-container">
-        <button class="layui-btn layui-btn-sm" onclick="xadmin.parentOpen('添加管理员',urlParseObj.main_url+'/admin/adminAdd.html',550,450)">
+        <button class="layui-btn layui-btn-sm" onclick="xadmin.parentOpen('添加菜单权限',urlParseObj.main_url+'/admin/meunAuthAdd.html',550,450)">
             <i class="layui-icon layui-icon-add-circle-fine"></i>新增
         </button>
         <button class="layui-btn layui-btn-sm" onclick="openCloseAll(1)">
@@ -86,6 +83,8 @@
             elem : '#end_time'
         });
 
+        //重置高度
+
         //数据表格
         var tableId = tablefilter = 'table';
         var initTable = table.render({
@@ -99,7 +98,6 @@
             cols: [[
                 {field:'auth_id', title:'ID', width:80, align:'center'},
                 {field:'auth_name', title:'名称', width:300,templet:function (row){
-
                         //默认样式以及缩进设置
                         var click_event_class   = 'click-event'; //点击事件样式
                         var arrow               = '<i class="tree-table-arrow layui-icon"></i>'; //名称前的箭头
@@ -124,7 +122,21 @@
                 {field:'auth_c', title:'控制器方法', width:170, templet:function (row){
                         return row.auth_c + ' / ' + row.auth_a;
                     }},
-                {field:'auth_level', title:'类型', width:170, align:'center'},
+                {field:'auth_level', title:'类型', width:80, align:'center', templet:function (row){
+                        if(1==row.auth_level) {
+                            return '<span class="layui-btn layui-btn-normal layui-btn-xs">模块</span>';
+                        }else if(2==row.auth_level) {
+                            if('#'==row.auth_a) {
+                                return '<span class="layui-btn layui-btn-danger layui-btn-xs">导航</span>';
+                            }else{
+                                return '<span class="layui-btn layui-btn-warm layui-btn-xs">菜单</span>';
+                            }
+                        }else if(3==row.auth_level) {
+                            return '<span class="layui-btn layui-btn-warm layui-btn-xs">菜单</span>';
+                        }else if(4==row.auth_level) {
+                            return '<span class="layui-btn layui-btn-primary layui-btn-xs">节点</span>';
+                        }
+                    }},
                 {field:'sort', title:'排序', width:80, align:'center'},
                 //{fixed: 'right', title:'操作', toolbar: '#toolTpl',width: 140},
             ]],

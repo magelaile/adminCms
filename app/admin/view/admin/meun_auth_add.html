@@ -1,0 +1,155 @@
+{layout name="public/layout" /}
+
+
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form">
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label class="layui-form-label"><span class="x-red">*</span>名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="" name="auth_name" required="" placeholder="请输入名称" lay-verify="auth_name" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label class="layui-form-label"><span class="x-red">*</span>类型</label>
+                <div class="layui-input-inline">
+                    <select name="type_id" lay-search="" lay-filter="type_id" lay-verify="required">
+                        <option value="">选择类型</option>
+                        {foreach $auth_type_arr as $key=>$vo }
+                        <option value="{$vo.type_id}">{$vo.type_name}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label class="layui-form-label"><span class="x-red">*</span>上级菜单</label>
+                <div class="layui-input-inline">
+                    <select name="role_id" lay-search="">
+                        {foreach $role_arr as $key=>$vo }
+                        <option value="{$vo.role_id}">{$vo.role_name}</option>
+                        {/foreach}
+                    </select>
+
+                </div>
+            </div>
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label class="layui-form-label"><span class="x-red">*</span>控制器</label>
+                <div class="layui-input-inline">
+                    <select name="role_id" lay-search="">
+                        {foreach $role_arr as $key=>$vo }
+                        <option value="{$vo.role_id}">{$vo.role_name}</option>
+                        {/foreach}
+                    </select>
+
+                </div>
+            </div>
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label class="layui-form-label"><span class="x-red">*</span>控制器方法</label>
+                <div class="layui-input-inline">
+                    <select name="role_id" lay-search="">
+                        {foreach $role_arr as $key=>$vo }
+                        <option value="{$vo.role_id}">{$vo.role_name}</option>
+                        {/foreach}
+                    </select>
+
+                </div>
+            </div>
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label class="layui-form-label"><span class="x-red">*</span>排序</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="50" name="sot" required="" lay-verify="number" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item my-no-margin-bottom">
+                <label class="layui-form-label"><span class="x-red">*</span>图标class名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="777777@qq.com" name="email" required="" lay-verify="email" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <button type="submit" class="layui-btn" lay-filter="submit" lay-submit="">保存</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<script>
+
+    layui.use(['form'], function() {
+        var form    = layui.form;
+
+        //自定义验证规则
+        form.verify({
+            auth_name: function(value){
+                if(value.length < 2){
+                    return '名称至少得2个字符!';
+                }
+            },
+        });
+
+        //监听提交
+        form.on('submit(submit)',function (data){
+            console.log(data);
+            showLoading('保存中...');
+            httpTool.httpPost({
+                url:'{:url("/admin/meunAuthAdd")}',
+                data:data.field,
+                success:function (res){
+                    if('1'==res.code) {
+                        xadmin.close();
+                        //刷新子页面列表
+                        parent.$("iframe[tab-id="+parent.iframeTabId+"]")[0].contentWindow.tableReload(1);
+
+                    }else{
+                        layer.alert(res.msg, {icon : 5});
+                    }
+                },
+                complete:function (res) {
+                    closeLoading();
+                }
+            });
+
+            return false;
+        });
+
+        //监听类型选择
+        form.on('select(type_id)',function (data){
+            console.log(data);
+
+            showLoading('加载中...');
+            httpTool.httpPost({
+                url:'{:url("/admin/meunAuthAdd")}',
+                data:data.field,
+                success:function (res){
+                    if('1'==res.code) {
+                        xadmin.close();
+                        //刷新子页面列表
+                        parent.$("iframe[tab-id="+parent.iframeTabId+"]")[0].contentWindow.tableReload(1);
+
+                    }else{
+                        layer.alert(res.msg, {icon : 5});
+                    }
+                },
+                complete:function (res) {
+                    closeLoading();
+                }
+            });
+        });
+
+
+    });// end  layui.use
+
+
+</script>

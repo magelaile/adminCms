@@ -161,7 +161,34 @@ class AdminController extends BaseController
     //菜单权限添加
     public function meunAuthAdd() {
 
+        if(request()->isPost()) {
+            $param = input();
 
+            $logic_admin_auth = new \app\admin\logic\AdminAuthLogic();
+
+            $data_type = trim($param['data_type']);
+
+            if('parent_menu'==$data_type) { //获取上级菜单
+                $res = $logic_admin_auth->getMenuListAll($param);
+                return response_json($res);
+
+            }else if('parent_menu'==$data_type) {
+
+
+            }else{ //保存数据
+                $res = $logic_admin_auth->addMeunAuth($param);
+                return response_json($res);
+            }
+        }
+
+        //菜单类型
+        $auth_type_arr = [
+            ['type_id'=>1,'type_name'=>'模块'],
+            ['type_id'=>2,'type_name'=>'导航'],
+            ['type_id'=>3,'type_name'=>'菜单'],
+            ['type_id'=>4,'type_name'=>'方法'],
+        ];
+        View::assign('auth_type_arr',$auth_type_arr);
         return View::fetch();
     }
 

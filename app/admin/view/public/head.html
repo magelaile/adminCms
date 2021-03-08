@@ -6,16 +6,21 @@
     <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8" />
 
     <!--引入CSS-->
-    <link rel="stylesheet" href="__CSS__/font.css">
-    <link rel="stylesheet" href="__CSS__/xadmin.css">
-    <link rel="stylesheet" href="__CSS__/theme-my.css">
+    <link rel="stylesheet" href="__ADMIN__/css/font.css">
+    <link rel="stylesheet" href="__ADMIN__/css/xadmin.css">
+
+    <!--自定义样式-->
+    <link rel="stylesheet" href="__ADMIN__/css/theme-my.css">
 
 
     <!--引入js-->
     <script src="__PLUGS__/jquery/3.2.1/jquery.min.js" charset="utf-8"></script>
     <script src="__PLUGS__/layui/v2.5.7/layui.js" charset="utf-8"></script>
-    <script type="text/javascript" src="__JS__/xadmin.js"></script>
-    <script type="text/javascript" src="__JS__/http.js"></script>
+    <script type="text/javascript" src="__ADMIN__/js/xadmin.js"></script>
+
+    <!--公共js-->
+    <script type="text/javascript" src="__STATIC__/http.js"></script>
+    <script type="text/javascript" src="__STATIC__/format.js"></script>
 
 
 
@@ -53,6 +58,7 @@
             layer.close(loadingflag);
         }
 
+
         //请求地址对象
         //获取当前请求的url以及各个参数
         var urlParseObj = {
@@ -62,6 +68,10 @@
             main_url: window.location.protocol+'//'+window.location.hostname+window.location.pathname.substr(0, window.location.pathname.indexOf('.php')+4),
         };
         //console.log(urlParseObj);
+
+
+        //输入框设置为只能输入数组 js-number-input
+
 
         //----全局配置 end-------------------------------------------------
 

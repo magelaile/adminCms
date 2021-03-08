@@ -4,10 +4,10 @@ namespace app\admin\logic;
 
 class AdminAuthLogic {
 
-    //获取权限菜单列表
+    /*获取权限菜单列表
+    */
     public function getMeunAuthList() {
         $where = [];
-
 
         $model_admin_auth = new \app\admin\model\AdminAuth();
         $lists = $model_admin_auth->where($where)->order('auth_level,sort ASC')->select()->toArray();
@@ -19,13 +19,11 @@ class AdminAuthLogic {
         //p($res_menu_list['data']);
 
         $lists_all = $this->handleMenuAuthArr($res_menu_list['data']);
-
         //p($lists_all);
 
         return success_return('获取成功!',$lists_all);
 
     }
-
 
     /* 获取所有权限列表并按层级分组
      */
@@ -78,9 +76,8 @@ class AdminAuthLogic {
         return success_return('查询成功',$menu_lists);
     }
 
-
-
-    //将权限列表多维数组按照层级顺序处理为一级数组
+    /*将权限列表多维数组按照层级顺序处理为一级数组
+    */
     public function handleMenuAuthArr($arr) {
 
         $lists_all = [];
@@ -120,5 +117,37 @@ class AdminAuthLogic {
         return $lists_all;
     }
 
+    /*权限保存
+    */
+    public function addMeunAuth($param = []) {
+        $data = [
+            'auth_name'     => $param['auth_name'],
+            'auth_pid'      => $param['auth_pid'],
+            'auth_pid_str'  => $param['auth_pid_str'],
+            'auth_c'        => $param['auth_c'],
+            'auth_a'        => $param['auth_a'],
+            'type_id'       => $param['type_id'],
+            'sort'          => $param['sort'],
+            'icon_class'    => $param['icon_class'],
+        ];
+        remove_space_and_eol($data);
 
+
+
+
+
+
+    }
+
+    /*权限编辑
+    */
+    public function editMeunAuth($param = []) {
+
+    }
+
+    /*权限删除
+    */
+    public function delMeunAuth($param = []) {
+
+    }
 }

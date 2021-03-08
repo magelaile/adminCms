@@ -6,8 +6,8 @@
 return [
     // 模板输出替换
     'tpl_replace_string'  =>  [
-        '__PLUGS__' => '/static/plugs',
-        '__JS__'    => '/static/app/admin/js',
-        '__CSS__'   => '/static/app/admin/css',
+        '__STATIC__'    => '/static',
+        '__PLUGS__'     => '/static/plugs',
+        '__ADMIN__'     => '/static/app/admin',
     ]
 ];

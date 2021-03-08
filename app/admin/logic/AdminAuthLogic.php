@@ -159,15 +159,15 @@ class AdminAuthLogic {
         if(false===$result){
             return fail_return($validate_admin_auth->getError());
         }
-        p($data);
+        //p($data);
 
         empty($data['auth_c']) && $data['auth_c'] = '#';
         empty($data['auth_a']) && $data['auth_a'] = '#';
 
         //保存数据
         $model_admin_auth = new \app\admin\model\AdminAuth();
-        $res_inser_id = $model_admin_auth->insertGetId($data);
-        if($res_inser_id<=0) {
+        $res_insert = $model_admin_auth->save($data);  //save方法默认只写入数据表已经有的字段
+        if(!$res_insert) {
             return fail_return();
         }
 

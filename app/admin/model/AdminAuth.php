@@ -5,8 +5,7 @@ use think\Model;
 
 class AdminAuth extends Model
 {
-
-
+    protected $pk = 'auth_id';
 
 
 }

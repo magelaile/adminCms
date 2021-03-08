@@ -10,6 +10,7 @@ class AdminAuthValidate extends Validate
         'auth_type'     => ['require','gt:0','checkParentInfo'],
         'auth_name'     => ['require','chsAlphaNum','length'=>'2,10'],
         'auth_pid'      => ['require','gt:0'],
+        'auth_pid_str'  => ['require','checkPidStr'],
         'auth_c'        => ['require','chsAlphaNum'],
         'auth_a'        => ['require','chsAlphaNum'],
         'auth_level'    => ['require','gt:0'],
@@ -24,6 +25,7 @@ class AdminAuthValidate extends Validate
         'auth_name.chsAlphaNum' => '账号只能为中文、字母和数字',
         'auth_name.length'      => '账号长度在2-10个字符之间',
         'auth_pid'              => '请选择上级菜单',
+        'auth_pid_str'          => 'pid_str错误',
         'auth_c'                => '请选择控制器名称',
         'auth_a'                => '请选择控制器方法',
         'auth_level'            => '层级错误',
@@ -34,29 +36,29 @@ class AdminAuthValidate extends Validate
     protected $scene = [
         //添加
         //模块
-        'add_typeid_1'   =>  ['auth_type','auth_name','auth_level','icon_class'],
+        'add_typeid_1'   =>  ['auth_type','auth_name','auth_level','auth_pid_str','icon_class'],
         //导航
-        'add_typeid_2'   =>  ['auth_type','auth_name','auth_level','auth_pid','icon_class'],
+        'add_typeid_2'   =>  ['auth_type','auth_name','auth_level','auth_pid','auth_pid_str','icon_class'],
         //菜单
-        'add_typeid_3'   =>  ['auth_type','auth_name','auth_level','auth_pid','auth_c','auth_a'],
+        'add_typeid_3'   =>  ['auth_type','auth_name','auth_level','auth_pid','auth_pid_str','auth_c','auth_a'],
         //权限
-        'add_typeid_4'   =>  ['auth_type','auth_name','auth_level','auth_pid','auth_c','auth_a'],
+        'add_typeid_4'   =>  ['auth_type','auth_name','auth_level','auth_pid','auth_pid_str','auth_c','auth_a'],
 
         //编辑
         //模块
         'edit_typeid_1'   =>  ['auth_id','auth_type','auth_name','auth_level','icon_class'],
         //导航
-        'edit_typeid_2'   =>  ['auth_id','auth_type','auth_name','auth_level','auth_pid','icon_class'],
+        'edit_typeid_2'   =>  ['auth_id','auth_type','auth_name','auth_level','auth_pid','auth_pid_str','icon_class'],
         //菜单
-        'edit_typeid_3'   =>  ['auth_id','auth_type','auth_name','auth_level','auth_pid','auth_c','auth_a'],
+        'edit_typeid_3'   =>  ['auth_id','auth_type','auth_name','auth_level','auth_pid','auth_pid_str','auth_c','auth_a'],
         //权限
-        'edit_typeid_4'   =>  ['auth_id','auth_type','auth_name','auth_level','auth_pid','auth_c','auth_a'],
+        'edit_typeid_4'   =>  ['auth_id','auth_type','auth_name','auth_level','auth_pid','auth_pid_str','auth_c','auth_a'],
     ];
 
     /* 判断上级
-     * 添加导航 那么上级必须是模块
-     * 添加菜单 那么上级必须是模块或者导航
-     * 添加节点 那么上级必须是菜单
+     * 导航 那么上级必须是模块
+     * 菜单 那么上级必须是模块或者导航
+     * 节点 那么上级必须是菜单
     */
     protected function checkParentInfo($value,$rule,$data) {
         if(2==$data['auth_type'] && $data['auth_p_type']!=1) {
@@ -67,6 +69,34 @@ class AdminAuthValidate extends Validate
 
         }else if(4==$data['auth_type'] && $data['auth_p_type']!=3) {
             return '添加节点，请选择菜单作为上级';
+        }
+        return true;
+    }
+
+    /* 判断上级id组成的字符串
+     * 模块 auth_pid_str为 '-'
+     * 导航 auth_pid_str中只有一个上级id
+     * 菜单 auth_pid_str中有一个或者两个上级id
+     * 节点 auth_pid_str中有三个上级id
+    */
+    protected function checkPidStr($value,$rule,$data) {
+        if(1==$data['auth_type'] && '-'!=$value) { //模块
+            return 'pid_str错误.';
+
+        }else if(2==$data['auth_type']) { //导航
+            if( count(explode('-', trim($value,'-')))!=1 || false===strpos($value,$data['auth_pid']) ) {
+                return 'pid_str错误..';
+            }
+
+        }else if(3==$data['auth_type']) { //菜单
+            if( count(explode('-', trim($value,'-')))<1 || false===strpos($value,$data['auth_pid']) ) {
+                return 'pid_str错误...';
+            }
+
+        }else if(4==$data['auth_type']) { //节点
+            if( count(explode('-', trim($value,'-')))!=3 || false===strpos($value,$data['auth_pid']) ) {
+                return 'pid_str错误...';
+            }
         }
         return true;
     }

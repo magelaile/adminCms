@@ -169,7 +169,15 @@ class AdminController extends BaseController
             $data_type = trim($param['data_type']);
 
             if('parent_menu'==$data_type) { //获取上级菜单
-                $res = $logic_admin_auth->getMenuListAll($param);
+
+                if(2==$param['type_id']) {//添加导航,上级只能是模块
+                    $param['auth_levels'] = '1';
+                }elseif (3==$param['type_id']) {//添加菜单,上级只能是导航
+                    $param['auth_levels'] = '1,2';
+                }elseif (4==$param['type_id']) {//添加权限,上级只能是菜单
+                    $param['auth_levels'] = '1,2,3';
+                }
+                $res = $logic_admin_auth->getMeunAuthList($param);
                 return response_json($res);
 
             }else if('parent_menu'==$data_type) {
@@ -181,14 +189,7 @@ class AdminController extends BaseController
             }
         }
 
-        //菜单类型
-        $auth_type_arr = [
-            ['type_id'=>1,'type_name'=>'模块'],
-            ['type_id'=>2,'type_name'=>'导航'],
-            ['type_id'=>3,'type_name'=>'菜单'],
-            ['type_id'=>4,'type_name'=>'方法'],
-        ];
-        View::assign('auth_type_arr',$auth_type_arr);
+
         return View::fetch();
     }
 

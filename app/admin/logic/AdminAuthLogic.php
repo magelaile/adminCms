@@ -6,13 +6,13 @@ class AdminAuthLogic {
 
     /*获取权限菜单列表
     */
-    public function getMeunAuthList() {
+    public function getMeunAuthList($param = []) {
         $where = [];
 
         $model_admin_auth = new \app\admin\model\AdminAuth();
         $lists = $model_admin_auth->where($where)->order('auth_level,sort ASC')->select()->toArray();
 
-        $res_menu_list = $this->getMenuListAll();
+        $res_menu_list = $this->getMenuListAll($param);
         if(!$res_menu_list['status']) {
             return $res_menu_list;
         }
@@ -122,20 +122,33 @@ class AdminAuthLogic {
     public function addMeunAuth($param = []) {
         $data = [
             'auth_name'     => $param['auth_name'],
+            'auth_type'     => $param['auth_type'],
             'auth_pid'      => $param['auth_pid'],
-            'auth_pid_str'  => $param['auth_pid_str'],
             'auth_c'        => $param['auth_c'],
             'auth_a'        => $param['auth_a'],
-            'type_id'       => $param['type_id'],
             'sort'          => $param['sort'],
             'icon_class'    => $param['icon_class'],
         ];
+
         remove_space_and_eol($data);
 
+        $validate_admin = new \app\admin\validate\AdminAuthValidate();
+        $result = $validate_admin->scene('add_typeid_'.$data['type_id'])->check($data);
+        if(false===$result){
+            return fail_return($validate_admin->getError());
+        }
+
+        p($param);
 
 
+        //保存数据
+        $model_admin_auth = new \app\admin\model\AdminAuth();
+        $res_inser_id = $model_admin_auth->insertGetId($data);
+        if($res_inser_id<=0) {
+            return fail_return();
+        }
 
-
+        return success_return();
 
     }
 

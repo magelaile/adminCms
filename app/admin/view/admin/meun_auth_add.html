@@ -8,26 +8,27 @@
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label"><span class="x-red">*</span>名称</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="" name="auth_name" required="" placeholder="请输入名称" lay-verify="auth_name" autocomplete="off" class="layui-input">
+                    <input type="text" value="这里是名称" name="auth_name" required="" placeholder="请输入名称" lay-verify="auth_name" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label"><span class="x-red">*</span>类型</label>
                 <div class="layui-input-inline">
-                    <select name="type_id" lay-search="" lay-filter="type_id" lay-verify="required">
+                    <select name="auth_type" lay-search="" lay-filter="auth_type" lay-verify="required">
                         <option value="">选择类型</option>
-                        {foreach $auth_type_arr as $key=>$vo }
-                        <option value="{$vo.type_id}">{$vo.type_name}</option>
-                        {/foreach}
+                        <option value="1">模块</option>
+                        <option value="2">导航</option>
+                        <option value="3">菜单</option>
+                        <option value="4">节点</option>
                     </select>
                 </div>
             </div>
 
             <div class="layui-form-item my-no-margin-bottom">
-                <label class="layui-form-label"><span class="x-red">*</span>上级菜单</label>
+                <label class="layui-form-label">上级菜单</label>
                 <div class="layui-input-inline">
-                    <select name="role_id" lay-search="">
+                    <select name="auth_pid" lay-search="">
                         {foreach $role_arr as $key=>$vo }
                         <option value="{$vo.role_id}">{$vo.role_name}</option>
                         {/foreach}
@@ -37,9 +38,9 @@
             </div>
 
             <div class="layui-form-item my-no-margin-bottom">
-                <label class="layui-form-label"><span class="x-red">*</span>控制器</label>
+                <label class="layui-form-label">控制器</label>
                 <div class="layui-input-inline">
-                    <select name="role_id" lay-search="">
+                    <select name="auth_c" lay-search="">
                         {foreach $role_arr as $key=>$vo }
                         <option value="{$vo.role_id}">{$vo.role_name}</option>
                         {/foreach}
@@ -49,9 +50,9 @@
             </div>
 
             <div class="layui-form-item my-no-margin-bottom">
-                <label class="layui-form-label"><span class="x-red">*</span>控制器方法</label>
+                <label class="layui-form-label">控制器方法</label>
                 <div class="layui-input-inline">
-                    <select name="role_id" lay-search="">
+                    <select name="auth_a" lay-search="">
                         {foreach $role_arr as $key=>$vo }
                         <option value="{$vo.role_id}">{$vo.role_name}</option>
                         {/foreach}
@@ -61,16 +62,16 @@
             </div>
 
             <div class="layui-form-item my-no-margin-bottom">
-                <label class="layui-form-label"><span class="x-red">*</span>排序</label>
+                <label class="layui-form-label">排序</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="50" name="sot" required="" lay-verify="number" autocomplete="off" class="layui-input">
+                    <input type="text" value="50" name="sort" lay-verify="number" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
             <div class="layui-form-item my-no-margin-bottom">
-                <label class="layui-form-label"><span class="x-red">*</span>图标class名称</label>
+                <label class="layui-form-label">图标class名称</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="777777@qq.com" name="email" required="" lay-verify="email" autocomplete="off" class="layui-input">
+                    <input type="text" value="icon-class" name="icon_class" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
@@ -125,18 +126,23 @@
         });
 
         //监听类型选择
-        form.on('select(type_id)',function (data){
+        form.on('select(auth_type)',function (data){
             console.log(data);
+
+            if('1'==data.value) {
+                return false;
+            }
 
             showLoading('加载中...');
             httpTool.httpPost({
                 url:'{:url("/admin/meunAuthAdd")}',
-                data:data.field,
+                data:{
+                    data_type:'parent_menu',
+                    type_id:data.value
+                },
                 success:function (res){
                     if('1'==res.code) {
-                        xadmin.close();
-                        //刷新子页面列表
-                        parent.$("iframe[tab-id="+parent.iframeTabId+"]")[0].contentWindow.tableReload(1);
+
 
                     }else{
                         layer.alert(res.msg, {icon : 5});

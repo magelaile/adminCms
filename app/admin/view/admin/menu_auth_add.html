@@ -1,5 +1,10 @@
 {layout name="public/layout" /}
 
+<style>
+    .layui-form-select dl dd {
+        line-height: 28px;
+    }
+</style>
 
 <div class="layui-fluid">
     <div class="layui-row">
@@ -29,23 +34,20 @@
                 <label class="layui-form-label">上级菜单</label>
                 <div class="layui-input-inline">
                     <select name="auth_pid" lay-search="" id="auth_pid">
-                        {foreach $role_arr as $key=>$vo }
-                        <option value="{$vo.role_id}">{$vo.role_name}</option>
-                        {/foreach}
+                        <option value="">选择上级菜单</option>
                     </select>
-
                 </div>
             </div>
 
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label">控制器</label>
                 <div class="layui-input-inline">
-                    <select name="auth_c" lay-search="">
-                        {foreach $role_arr as $key=>$vo }
-                        <option value="{$vo.role_id}">{$vo.role_name}</option>
+                    <select name="auth_c" lay-search="" lay-filter="auth_c" id="auth_c">
+                        <option value="">选择控制器</option>
+                        {foreach $controller_list as $key=>$vo}
+                        <option value="{$vo}">{$vo}</option>
                         {/foreach}
                     </select>
-
                 </div>
             </div>
 
@@ -53,9 +55,7 @@
                 <label class="layui-form-label">控制器方法</label>
                 <div class="layui-input-inline">
                     <select name="auth_a" lay-search="">
-                        {foreach $role_arr as $key=>$vo }
-                        <option value="{$vo.role_id}">{$vo.role_name}</option>
-                        {/foreach}
+                        <option value="">选择控制器方法</option>
                     </select>
 
                 </div>
@@ -128,22 +128,42 @@
         //监听类型选择
         form.on('select(auth_type)',function (data){
             console.log(data);
-
-            if('1'==data.value) {
+            if(!data.value || '1'==data.value) {
+                $('#auth_pid').html('');
+                form.render('select');
                 return false;
             }
+            //获取数据
+            getOrSaveData({data_type:'parent_menu',auth_type:data.value},function (res){
+                $('#auth_pid').html(res.data);
+                form.render('select');
+            });
+        });
 
-            showLoading('加载中...');
+        //监听控制器选择
+        form.on('select(auth_c)',function (data){
+            console.log(data);
+            if(!data.value) {
+                return false;
+            }
+            //获取数据
+            getOrSaveData({data_type:'controller_action',auth_c:data.value},function (res){
+                var sel_option = '<option value="">选择控制器方法</option>'
+            });
+        });
+
+        //获取/保存数据
+        function getOrSaveData(data,callback,msg) {
+            //加载框
+            msg ? showLoading(msg) : showLoading('加载中...');
+
             httpTool.httpPost({
                 url:'{:url("/admin/menuAuthAdd")}',
-                data:{
-                    data_type:'parent_menu',
-                    type_id:data.value
-                },
+                data:data,
                 success:function (res){
                     if('1'==res.code) {
-
-
+                        //回调函数
+                        if(typeof callback=='function') callback(res);
                     }else{
                         layer.alert(res.msg, {icon : 5});
                     }
@@ -152,7 +172,7 @@
                     closeLoading();
                 }
             });
-        });
+        }
 
 
     });// end  layui.use

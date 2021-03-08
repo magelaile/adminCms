@@ -1,0 +1,20 @@
+<option value="">选择上级菜单</option>
+{foreach $menu_auth_list as $key=>$vo}
+<option value="{$vo.auth_id}">
+{if condition="2==$vo['auth_level']"}
+|-
+{elseif condition="3==$vo['auth_level']" /}
+|- |--
+{/if}
+{$vo.auth_name}
+{if condition="1==$vo['auth_type']"}
+ [模块]
+{elseif condition="2==$vo['auth_type']" /}
+ [导航]
+{elseif condition="3==$vo['auth_type']" /}
+ [菜单]
+{else /}
+ [未知]
+{/if}
+</option>
+{/foreach}

@@ -129,6 +129,49 @@ function check_mobile($mobile){
     return true;
 }
 
+/* 获取指定路径中的所所有文件名
+ * @param $path 要打开的额路径
+ * @param $exceptFile array 需要排除的文件名
+ * @param $exceptByExt array 需要排除的后缀
+ * @param $withExt bool 保留后缀  true=保留  false=不保留
+ * @return array
+ */
+function get_all_filenamne($path,$exceptByName=[],$exceptByExt=[],$withExt=true) {
+    $file_name_arr = [];
+    if(!is_dir($path)) {
+        die('不是一个路径：'.$path);
+        //return [];
+    }
+
+    $dh = opendir($path);
+    if(!$dh) {
+        die('打开路径失败：'.$path);
+        //return [];
+    }
+
+    while (($file_name=readdir($dh)) !== false) {
+
+        //排除指定的文件名
+        if(!empty($exceptByName) && in_array($file_name,$exceptByName)) {
+            continue;
+        }
+
+        //排除指定的后缀
+        if(!empty($exceptByExt) && in_array(pathinfo($file_name)['extension'],$exceptByExt)) {
+            continue;
+        }
+
+        //是否含有后缀
+        if(false==$withExt) {
+            $file_name = basename($file_name,'.'.pathinfo($file_name)['extension']);
+        }
+
+        $file_name_arr[] = $file_name;
+    }
+    closedir($dh);
+
+    return $file_name_arr;
+}
 
 /* 递归删除文件夹
  * @param array $path 文件夹路径或者文件路径

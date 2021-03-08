@@ -7,10 +7,6 @@ class AdminAuthLogic {
     /*获取权限菜单列表
     */
     public function getMeunAuthList($param = []) {
-        $where = [];
-
-        $model_admin_auth = new \app\admin\model\AdminAuth();
-        $lists = $model_admin_auth->where($where)->order('auth_level,sort ASC')->select()->toArray();
 
         $res_menu_list = $this->getMenuListAll($param);
         if(!$res_menu_list['status']) {
@@ -119,7 +115,7 @@ class AdminAuthLogic {
 
     /*权限保存
     */
-    public function addMeunAuth($param = []) {
+    public function addMenuAuth($param = []) {
         $data = [
             'auth_name'     => $param['auth_name'],
             'auth_type'     => $param['auth_type'],

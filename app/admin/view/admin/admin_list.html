@@ -196,7 +196,7 @@
                         parent.layer.msg(res.msg);
 
                         //回调函数
-                        if(typeof callback=='function') callback();
+                        if(typeof callback=='function') callback(res);
 
                     }else{
                         parent.layer.alert(res.msg, {icon : 5});

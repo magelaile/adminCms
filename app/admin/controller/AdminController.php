@@ -170,29 +170,54 @@ class AdminController extends BaseController
 
             if('parent_menu'==$data_type) { //获取上级菜单
 
-                if(2==$param['type_id']) {//添加导航,上级只能是模块
+                if(2==$param['auth_type']) {//添加导航
                     $param['auth_levels'] = '1';
-                }elseif (3==$param['type_id']) {//添加菜单,上级只能是导航
+                }elseif (3==$param['auth_type']) {//添加菜单
                     $param['auth_levels'] = '1,2';
-                }elseif (4==$param['type_id']) {//添加权限,上级只能是菜单
+                }elseif (4==$param['auth_type']) {//添加权限
                     $param['auth_levels'] = '1,2,3';
                 }
                 $res = $logic_admin_auth->getMeunAuthList($param);
 
                 View::assign('menu_auth_list',$res['data']);
-                $tpl = View::fetch('ajax/');
+                $tpl = View::fetch('/admin/ajax/menu_auth_sel_parent');
 
-                return response_json($res);
+                return response_json(success_return('获取成功',$tpl));
 
-            }else if('parent_menu'==$data_type) {
+            }else if('controller_action'==$data_type) { //获取控制器中的方法
 
+                $controller_name = $param['auth_c'];
+                $contrl      = get_class_methods('app\admin\controller\\'.$controller_name);
+                $base_contrl = get_class_methods('app\BaseController');
+                $diffArray   = array_diff($contrl,$base_contrl);
+                //将方法名统一转换为小写
+                //$diffArray  = array_map('strtolower',$diffArray);
+
+                p($diffArray);
+
+                return response_json(success_return('获取成功',$result));
 
             }else{ //保存数据
-                $res = $logic_admin_auth->addMeunAuth($param);
+                $res = $logic_admin_auth->addMenuAuth($param);
                 return response_json($res);
             }
         }
 
+
+
+
+
+
+
+
+        //获取控制器列表
+        $exceptFileName = ['.','..','.svn'];
+        $controller_list = get_all_filenamne(app_path().'controller',$exceptFileName,[],false);
+        /*array_walk($controller_list,function (&$value,$key){
+            $value = str_replace('Controller','',$value);
+        });*/
+        //p($controller_list);
+        View::assign('controller_list',$controller_list);
 
         return View::fetch();
     }

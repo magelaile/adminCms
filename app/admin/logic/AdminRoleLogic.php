@@ -119,5 +119,75 @@ class AdminRoleLogic
         return success_return('删除成功');
     }
 
+    //角色权限
+    public function getAuthTreeData($role_auth_ids_arr = []) {
+
+        //查询条件、字段
+        $where = [];
+        //set_where_if_not_empty($where,$param,'auth_ids','IN','auth_id');
+        //set_where_if_not_empty($where,$param,'auth_levels','IN','auth_level');
+        //p($where);
+        $field = "*";
+
+        $model_admin_auth = new \app\admin\model\AdminAuth();
+        $lists = $model_admin_auth->field($field)->where($where)->order('auth_level ASC,sort DESC')->select()->toArray();
+
+        $menu_lists = [];
+
+        foreach($lists as $list_one) {
+
+            $auth_id = $list_one['auth_id'];
+
+            //跳转链接生成
+            if(!empty($list_one['auth_c']) && !empty($list_one['auth_a'])) {
+                $list_one['_href'] = url('/'.$list_one['auth_c'].'/'.$list_one['auth_a'])->build();
+            }
+
+            $tmp_one = [
+                'title'=> $list_one['auth_name'],
+                'id'=> $list_one['auth_id'],
+                'field'=> '',
+                'checked'=> false,
+            ];
+
+            //数据组装
+            if(1==$list_one['auth_level']) { //一级菜单
+                $menu_lists[$auth_id] = $tmp_one;
+
+            }else if(2==$list_one['auth_level']) {//二级菜单
+                $first_pid = $list_one['auth_pid'];
+                $menu_lists[$first_pid]['children'][$auth_id] = $tmp_one;
+
+            }else if(3==$list_one['auth_level']) {
+                $auth_pid_arr = explode('-',trim($list_one['auth_pid_str'],'-'));
+                $first_pid = $auth_pid_arr[0]; //所在一级id
+                $second_pid = $auth_pid_arr[1];  //所在二级id
+                $menu_lists[$first_pid]['children'][$second_pid]['children'][$auth_id] = $tmp_one;
+
+            }else if(4==$list_one['auth_level']) {
+                $auth_pid_arr = explode('-',trim($list_one['auth_pid_str'],'-'));
+                $first_pid = $auth_pid_arr[0]; //所在一级id
+                $second_pid = $auth_pid_arr[1];  //所在二级id
+                $third_pid = $auth_pid_arr[2];  //所在三级id
+                $menu_lists[$first_pid]['children'][$second_pid]['children'][$third_pid]['children'][$auth_id] = $tmp_one;
+            }
+        }
+
+        $return_arr = $this->relatedArrToIndexArr($menu_lists);
+        //p($return_arr);
+        return success_return('查询成功',$return_arr);
+    }
+
+    //数组去下标处理
+    public function relatedArrToIndexArr($arr=[]) {
+        $arr_new = array_values($arr);
+        foreach ($arr_new as &$value) {
+            if(isset($value['children'])) {
+                $value['children'] = $this->relatedArrToIndexArr($value['children']);
+            }
+        }
+        return $arr_new;
+    }
+
 
 }

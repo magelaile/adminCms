@@ -85,6 +85,9 @@
                         obj.del();
                     });
                 });
+
+            }else if('editRoleAuth'==obj.event) {
+                xadmin.parentOpen('编辑角色权限',urlParseObj.main_url+'/admin/roleAuthEdit/role_id/'+obj.data.role_id+'.html',500,500);
             }
         });
 

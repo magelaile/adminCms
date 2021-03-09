@@ -205,9 +205,9 @@ class AdminController extends BaseController
         //获取控制器列表
         $exceptFileName = ['.','..','.svn'];
         $controller_list = get_all_filenamne(app_path().'controller',$exceptFileName,[],false);
-        /*array_walk($controller_list,function (&$value,$key){
+        array_walk($controller_list,function (&$value,$key){
             $value = str_replace('Controller','',$value);
-        });*/
+        });
         //p($controller_list);
         View::assign('controller_list',$controller_list);
 
@@ -216,16 +216,61 @@ class AdminController extends BaseController
 
     //菜单权限编辑
     public function menuAuthEdit() {
+        if(request()->isPost()) {
+            $param = input();
 
+            $logic_admin_auth = new \app\admin\logic\AdminAuthLogic();
+
+            $data_type = trim($param['data_type']);
+
+            if('controller_action'==$data_type) { //获取控制器中的方法
+
+                $controller_name = $param['auth_c'];
+                $contrl      = get_class_methods('app\admin\controller\\'.$controller_name);
+                $base_contrl = get_class_methods('app\BaseController');
+                $diffArray   = array_diff($contrl,$base_contrl);
+                //将方法名统一转换为小写
+                //$diffArray  = array_map('strtolower',$diffArray);
+                //p($diffArray);
+
+                return response_json(success_return('获取成功',$diffArray));
+
+            }else{ //保存数据
+                $res = $logic_admin_auth->editMenuAuth($param);
+                return response_json($res);
+            }
+        }
+
+
+        $auth_id = input('auth_id/d',0);
+
+        //权限信息
+        $logic_admin_auth = new \app\admin\logic\AdminAuthLogic();
+        $res_auth_info = $logic_admin_auth->getAuthInfo(['auth_id'=>$auth_id]);
+        //p($res_auth_info);
+        View::assign('auth_info',$res_auth_info['data']);
+
+        //获取控制器列表
+        $exceptFileName = ['.','..','.svn'];
+        $controller_list = get_all_filenamne(app_path().'controller',$exceptFileName,[],false);
+        array_walk($controller_list,function (&$value,$key){
+            $value = str_replace('Controller','',$value);
+        });
+        //p($controller_list);
+        View::assign('controller_list',$controller_list);
 
         return View::fetch();
     }
 
     //菜单权限删除
     public function menuAuthDel() {
-
-
-        return View::fetch();
+        $param = input();
+        if(request()->isPost()) {
+            $logic_admin_auth = new \app\admin\logic\AdminAuthLogic();
+            $res = $logic_admin_auth->delMenuAuth($param);
+            return response_json($res);
+        }
+        return response_json(fail_return());
     }
 
 

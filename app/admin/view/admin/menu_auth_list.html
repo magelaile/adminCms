@@ -60,14 +60,6 @@
     </div>
 </script>
 
-<script type="text/html" id="toolTpl">
-    <button type="button" onclick="xadmin.parentOpen('编辑管理员',urlParseObj.main_url+'/admin/adminEdit/admin_id/{{d.admin_id}}.html',550,450);" class="layui-btn layui-btn-normal layui-btn-xs">编辑</button>
-    {{#  if(d.admin_id > 1){ }}
-    <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delOne">删除</button>
-    {{#  } }}
-</script>
-
-
 <script>
 
     layui.use([ 'table', 'form', 'laydate'], function() {
@@ -97,7 +89,7 @@
             defaultToolbar: [],
             cols: [[
                 {field:'auth_id', title:'ID', width:80, align:'center'},
-                {field:'auth_name', title:'名称', width:240,templet:function (row){
+                {field:'auth_name', title:'名称', width:260,templet:function (row){
                         //默认样式以及缩进设置
                         var click_event_class   = 'click-event'; //点击事件样式
                         var arrow               = '<i class="tree-table-arrow layui-icon"></i>'; //名称前的箭头
@@ -130,11 +122,16 @@
                             return '<span class="layui-btn layui-btn-primary layui-btn-xs">节点</span>';
                         }
                     }},
-                {field:'auth_c', title:'控制器方法', width:170, templet:function (row){
+                {field:'auth_c', title:'控制器方法', width:250, templet:function (row){
                         return row.auth_c + ' / ' + row.auth_a;
                     }},
-                {field:'sort', title:'排序', width:80, align:'center'},
-                //{fixed: 'right', title:'操作', toolbar: '#toolTpl',width: 140},
+                {field:'sort', title:'排序', width:80, align:'right'},
+                {field:'auth_id', /*fixed: 'right',*/ title:'操作',width: 140, templet:function (){
+                        var opt_str =
+                         '<button type="button" lay-event="editOne" class="layui-btn layui-btn-normal layui-btn-xs">编辑</button>' +
+                         '<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delOne">删除</button>';
+                        return opt_str;
+                    }},
             ]],
             done:function (res, curr, count){
 
@@ -147,32 +144,32 @@
 
                 //重新组装表格所有的行
                 var tableMainHtml = '';
+                var tableFixedRrightHtml = '';
                 for(var i=0; i<res.data.length;i++) {
                     var row = res.data[i];
                     var index = i;
-                    var tr = getTr(row,index,table_cols);
-                    tableMainHtml += tr;
+                    var tr_obj = getTableTr(row,index,table_cols);
+                    tableMainHtml += tr_obj.table_main_tr;
+                    tableFixedRrightHtml += tr_obj.table_fixed_right_tr
                 }
-                /*res.data.map(function (item,index,arr){
-                    var tr = getTr(item,index,table_cols);
-                    tableMainHtml += tr;
-                });*/
+                //console.log(tableFixedRrightHtml);
 
                 //重新赋值
                 $(".layui-table-main tbody").html(tableMainHtml);
+                if(tableFixedRrightHtml) {
+                    $(".layui-table-fixed-r .layui-table-body tbody").html(tableFixedRrightHtml);
+                }
 
-
-                /* 表格行数据组装
+                /* 表格行数据组装 主内容表格的行、右侧固定表格的行
                  * item 行数据
                  * index 行index
                  * table_cols 表格的 cols 设置
                  */
-                function getTr(item,index,table_cols) {
+                function getTableTr(item,index,table_cols) {
 
                     //自定义样式
-                    var open_close_class    = 'tree-table-open'; //展开关闭样式
-
                     //打开关闭样式，默认打开 1=级菜单 2=级菜单 3=级菜单关闭 4=级菜单隐藏
+                    var open_close_class    = 'tree-table-open'; //展开关闭样式
                     if(1==item.auth_level) {
                         open_close_class    = 'tree-table-open'; //打开
                     } else if(2==item.auth_level){
@@ -183,14 +180,11 @@
                         open_close_class    = 'tree-table-hide';//隐藏
                     }
 
-                    //名称缩进处理
-                    var  indent_spans = '';
-                    for (var i=1;i<item.auth_level;i++) {
-                        indent_spans += '<span class="tree-table-indent"></span>';
-                    }
+                    var tr_obj = {};
 
-                    //组装行数据
-                    var tr_str = `<tr data-index="${index}" class="${open_close_class}" data-id="${item.auth_id}" data-pidstr="${item.auth_pid_str}" data-indent="${item.auth_level}">`;
+                    //组装每行的单元格
+                    var table_main_tds = ''; //主内容表格的单元格
+                    var table_fixed_right_tds = ''; //右侧固定表格的单元格
                     for(var j=0; j<table_cols.length; j++) {
                         var col = table_cols[j];
 
@@ -205,16 +199,38 @@
                             content = eval("item." + col.field);
                         }
 
-                        //单元格
-                        var td_str=`<td data-field="${col.field}" data-key="1-${index}-${j}" align="${align}" class="">
-                                        <div class="layui-table-cell laytable-cell-1-${index}-${j}">${content}</div>
-                                    </td>`;
+                        if('right' == col.fixed) {
+                            //console.log(content);
+                            //右侧固定表格的行的单元格
+                            table_fixed_right_tds +=
+                                `<td data-field="${col.field}" data-key="1-${index}-${j}" align="${align}" data-off="true" class="layui-table-col-special">
+                                    <div class="layui-table-cell laytable-cell-1-${index}-${j}">${content}</div>
+                                </td>`;
+                        }
 
-                        tr_str += td_str;
+                        //主内容表格的单元格
+                        table_main_tds +=
+                            `<td data-field="${col.field}" data-key="1-${index}-${j}" align="${align}" class="">
+                                    <div class="layui-table-cell laytable-cell-1-${index}-${j}">${content}</div>
+                                </td>`;
                     }
-                    tr_str += `</tr>`;
 
-                    return tr_str;
+                    //主内容表格的行
+                    var table_main_tr =
+                        `<tr data-index="${index}" class="${open_close_class}" data-id="${item.auth_id}" data-pidstr="${item.auth_pid_str}" data-indent="${item.auth_level}">
+                            ${table_main_tds}
+                        </tr>`;
+
+                    //右侧固定表格的
+                    if(''!=table_fixed_right_tds) {
+                        var table_fixed_right_tr=
+                            `<tr data-index="${index}" class="">
+                                ${table_fixed_right_tds}
+                            </tr>`;
+
+                    }
+
+                    return {"table_main_tr":table_main_tr,"table_fixed_right_tr":table_fixed_right_tr};
 
 
                     /*
@@ -268,14 +284,13 @@
 
                      */
                 }
-
             }
 
         });
 
 
         //点击展开和关闭
-        $("table").on("click", "tr .click-event", function(event){
+        $(document).on("click", "tr .click-event", function(event){
             var tr          = $(this).parents('tr');
             var tr_id       = $(tr).data('id');
             var tr_indent   = $(tr).data('indent');
@@ -466,24 +481,22 @@
 
         //监听行工具事件
         table.on('tool('+tablefilter+')', function(obj){
-
+            console.log(obj.data);
             if('delOne'===obj.event){
                 layer.confirm('确认删除吗？', function(index){
                     layer.close(index);
-                    delAdmin(obj.data.admin_id,function (){
+                    meunAuthDel(obj.data.auth_id,function (){
                         obj.del();
                     });
                 });
+
+            }else if('editOne'===obj.event) {
+                xadmin.parentOpen('编辑菜单权限',urlParseObj.main_url+'/admin/menuAuthEdit/auth_id/'+obj.data.auth_id+'.html',500,500);
             }
         });
 
         //监听搜索
         $('#search-btn').click(function() {
-            tableReload();
-        });
-
-        //监听选择框检索条件变化
-        form.on('select(search_sel_change)', function(data) {
             tableReload();
         });
 
@@ -523,14 +536,14 @@
             }
             parent.showLoading();
             httpTool.httpPost({
-                url:'{:url("/admin/meunAuthDel")}',
-                data:{ids:ids},
+                url:'{:url("/admin/menuAuthDel")}',
+                data:{id:ids},
                 success:function (res){
                     if('1'==res.code) {
                         parent.layer.msg(res.msg);
 
                         //回调函数
-                        if(typeof callback=='function') callback();
+                        if(typeof callback=='function') callback(res);
 
                     }else{
                         parent.layer.alert(res.msg, {icon : 5});

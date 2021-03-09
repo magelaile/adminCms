@@ -16,7 +16,7 @@
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label"><span class="x-red">*</span>名称</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="这里是名称" name="auth_name" required="" placeholder="请输入名称" lay-verify="auth_name" autocomplete="off" class="layui-input">
+                    <input type="text" value="{$auth_info.auth_name}" name="auth_name" required="" placeholder="请输入名称" lay-verify="auth_name" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
@@ -75,7 +75,7 @@
             <div class="layui-form-item my-no-margin-bottom">
                 <label class="layui-form-label">图标class名称</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="" name="icon_class" placeholder="如：layui-icon-username" autocomplete="off" class="layui-input">
+                    <input type="text" value="{$auth_info.icon_class}" name="icon_class" placeholder="如：layui-icon-username" autocomplete="off" class="layui-input">
                 </div>
                 <div class="layui-form-mid layui-word-aux"> <span class="x-red">*</span>Layui图标库中的图标样式</div>
             </div>
@@ -83,6 +83,7 @@
 
             <div class="layui-form-item">
                 <label class="layui-form-label"></label>
+                <input type="hidden" value="{$auth_info.auth_id}" name="auth_id" />
                 <button type="submit" class="layui-btn" lay-filter="submit" lay-submit="">保存</button>
             </div>
 
@@ -146,7 +147,7 @@
             getOrSaveData({data_type:'controller_action',auth_c:data.value},function (res){
                 var sel_option = '<option value="">选择控制器方法</option>'
                 res.data.map(function (value,index,arr){
-                    sel_option += `<option value="${value}">${value}</option>`;
+                    sel_option += `<option value="${value}">${value}Controller</option>`;
                 });
                 //console.log(sel_option);
                 $('#auth_a').html(sel_option);
@@ -160,7 +161,7 @@
             msg ? showLoading(msg) : showLoading('加载中...');
 
             httpTool.httpPost({
-                url:'{:url("/admin/menuAuthAdd")}',
+                url:'{:url("/admin/menuAuthEdit")}',
                 data:data,
                 success:function (res){
                     if('1'==res.code) {

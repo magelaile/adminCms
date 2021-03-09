@@ -2,6 +2,8 @@
 
 namespace app\admin\logic;
 
+use think\Db;
+
 class AdminAuthLogic {
 
     /*获取权限菜单列表
@@ -133,9 +135,9 @@ class AdminAuthLogic {
         $data['auth_level'] = 1;
         $data['auth_pid_str'] = '-';
         if($data['auth_pid']>0) {
-            $parent_auth_info = $this->getAuthInfo(['auth_id'=>$data['auth_pid']]);
-            $data['auth_p_type'] = $parent_auth_info['data']['auth_type'];
-            $data['auth_pid_str'] = $parent_auth_info['auth_pid_str'].$parent_auth_info['auth_id'].'-';
+            $res_parent_auth = $this->getAuthInfo(['auth_id'=>$data['auth_pid']]);
+            $data['auth_p_type'] = $res_parent_auth['data']['auth_type'];
+            $data['auth_pid_str'] = $res_parent_auth['data']['auth_pid_str'].$res_parent_auth['data']['auth_id'].'-';
         }
 
         //权限层级
@@ -152,6 +154,7 @@ class AdminAuthLogic {
         }else if(4==$data['auth_type']) { //节点
             $data['auth_level'] = 4;
         }
+        //p($data);
 
         //验证
         $validate_admin_auth = new \app\admin\validate\AdminAuthValidate();
@@ -175,15 +178,82 @@ class AdminAuthLogic {
     }
 
     /*权限编辑
+     * 禁止编辑类型和层级，否则可能会导致父子级关系错乱
     */
-    public function editMeunAuth($param = []) {
+    public function editMenuAuth($param = []) {
 
+        return fail_return('功能正在开发中...');
+
+        $data = [
+            'auth_id'       => $param['auth_id'],
+            'auth_name'     => $param['auth_name'],
+            'auth_c'        => $param['auth_c'],
+            'auth_a'        => $param['auth_a'],
+            'sort'          => $param['sort'],
+            'icon_class'    => $param['icon_class'],
+        ];
+
+        remove_space_and_eol($data);
+
+        //p($data);
+
+        //权限信息
+        $res_auth_info = $this->getAuthInfo(['auth_id'=>$data['auth_id']]);
+        if(empty($res_auth_info['data'])) {
+            return fail_return('该记录信息有误');
+        }
+
+        //验证
+        $validate_admin_auth = new \app\admin\validate\AdminAuthValidate();
+        $result = $validate_admin_auth->scene('add_typeid_'.$data['auth_type'])->check($data);
+        if(false===$result){
+            return fail_return($validate_admin_auth->getError());
+        }
+        //p($data);
+
+        empty($data['auth_c']) && $data['auth_c'] = '#';
+        empty($data['auth_a']) && $data['auth_a'] = '#';
+
+
+        $model_admin_auth = new \app\admin\model\AdminAuth();
+        $res_save = $model_admin_auth->sava($data);  //save方法默认只写入数据表已经有的字段
+        if(!$res_save) {
+            return fail_return();
+        }
+
+        return success_return();
     }
 
     /*权限删除
     */
-    public function delMeunAuth($param = []) {
+    public function delMenuAuth($param = []) {
+        $id = trim($param['id'],',');
 
+        remove_space_and_eol($id);
+
+        if(empty($id)) {
+            return fail_return('参数错误');
+        }
+
+        $res_autu_info = $this->getAuthInfo(['auth_id'=>$id]);
+        if(empty($res_autu_info['data'])) {
+            return fail_return('该条记录信息有误');
+        }
+
+        //判断该条记录是否有下级
+        $res_child_auth = $this->getAuthInfo(['auth_pid'=>$id]);
+        if(!empty($res_child_auth['data'])) {
+            return fail_return('请先删除子菜单权限');
+        }
+
+        $model_admin_auth = new \app\admin\model\AdminAuth();
+        $res_del = $model_admin_auth->where('auth_id','=',$id)->delete();
+
+        if(false===$res_del) {
+            return fail_return('删除失败');
+        }
+
+        return success_return('删除成功');
     }
 
     /*获取权限菜单信息
@@ -193,6 +263,7 @@ class AdminAuthLogic {
         //查询条件、字段
         $where = [];
         set_where_if_not_empty($where,$param,'auth_id','=');
+        set_where_if_not_empty($where,$param,'auth_pid','=');
         //p($where);
         $field = isset($param['field']) ? $param['field'] : "*";
 

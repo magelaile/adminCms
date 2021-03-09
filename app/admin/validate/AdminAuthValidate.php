@@ -7,12 +7,10 @@ class AdminAuthValidate extends Validate
 {
     protected $rule=[
         'auth_id'       => ['require','gt:0'],
-        'auth_type'     => ['require','gt:0','checkParentInfo'],
+        'auth_type'     => ['require','gt:0','checkType'],
         'auth_name'     => ['require','chsAlphaNum','length'=>'2,10'],
         'auth_pid'      => ['require','gt:0'],
         'auth_pid_str'  => ['require','checkPidStr'],
-        'auth_c'        => ['require','chsAlphaNum'],
-        'auth_a'        => ['require','chsAlphaNum'],
         'auth_level'    => ['require','gt:0'],
         'icon_class'    => ['require'],
     ];
@@ -26,8 +24,6 @@ class AdminAuthValidate extends Validate
         'auth_name.length'      => '账号长度在2-10个字符之间',
         'auth_pid'              => '请选择上级菜单',
         'auth_pid_str'          => 'pid_str错误',
-        'auth_c'                => '请选择控制器名称',
-        'auth_a'                => '请选择控制器方法',
         'auth_level'            => '层级错误',
         'icon_class'            => '图标class不能为空'
     ];
@@ -40,19 +36,19 @@ class AdminAuthValidate extends Validate
         //导航
         'add_typeid_2'   =>  ['auth_type','auth_name','auth_level','auth_pid','auth_pid_str','icon_class'],
         //菜单
-        'add_typeid_3'   =>  ['auth_type','auth_name','auth_level','auth_pid','auth_pid_str','auth_c','auth_a'],
+        'add_typeid_3'   =>  ['auth_type','auth_name','auth_level','auth_pid','auth_pid_str'],
         //权限
-        'add_typeid_4'   =>  ['auth_type','auth_name','auth_level','auth_pid','auth_pid_str','auth_c','auth_a'],
+        'add_typeid_4'   =>  ['auth_type','auth_name','auth_level','auth_pid','auth_pid_str'],
 
         //编辑
         //模块
-        'edit_typeid_1'   =>  ['auth_id','auth_type','auth_name','auth_level','icon_class'],
+        'edit_typeid_1'   =>  ['auth_id','auth_name','icon_class'],
         //导航
-        'edit_typeid_2'   =>  ['auth_id','auth_type','auth_name','auth_level','auth_pid','auth_pid_str','icon_class'],
+        'edit_typeid_2'   =>  ['auth_id','auth_name','icon_class'],
         //菜单
-        'edit_typeid_3'   =>  ['auth_id','auth_type','auth_name','auth_level','auth_pid','auth_pid_str','auth_c','auth_a'],
+        'edit_typeid_3'   =>  ['auth_id','auth_name'],
         //权限
-        'edit_typeid_4'   =>  ['auth_id','auth_type','auth_name','auth_level','auth_pid','auth_pid_str','auth_c','auth_a'],
+        'edit_typeid_4'   =>  ['auth_id','auth_name'],
     ];
 
     /* 判断上级
@@ -60,15 +56,36 @@ class AdminAuthValidate extends Validate
      * 菜单 那么上级必须是模块或者导航
      * 节点 那么上级必须是菜单
     */
-    protected function checkParentInfo($value,$rule,$data) {
-        if(2==$data['auth_type'] && $data['auth_p_type']!=1) {
-            return '添加导航，请选择模块作为上级';
+    protected function checkType($value,$rule,$data) {
+        if(2==$data['auth_type']) {
+            if(!empty($data['auth_c']) || !empty($data['auth_a'])) {
+                return '添加模块，不需要填写控制器和控制器方法';
+            }
 
-        }else if(3==$data['auth_type'] && !in_array($data['auth_p_type'],[1,2])) {
-            return '添加菜单，请选择导航或者模块作为上级';
+        }else if(2==$data['auth_type']) {
+            if($data['auth_p_type']!=1) {
+                return '添加导航，请选择模块作为上级';
+            }
+            if(!empty($data['auth_c']) || !empty($data['auth_a'])) {
+                return '添加导航，不需要填写控制器和控制器方法';
+            }
 
-        }else if(4==$data['auth_type'] && $data['auth_p_type']!=3) {
-            return '添加节点，请选择菜单作为上级';
+        }else if(3==$data['auth_type']) {
+            if(!in_array($data['auth_p_type'],[1,2])) {
+                return '添加菜单，请选择导航或者模块作为上级';
+            }
+            if(empty($data['auth_c']) || empty($data['auth_a'])) {
+                return '添加菜单，请选择控制器和控制器方法';
+            }
+
+        }else if(4==$data['auth_type']) {
+            if($data['auth_p_type']!=3) {
+                return '添加节点，请选择菜单作为上级';
+            }
+            if(empty($data['auth_c']) || empty($data['auth_a'])) {
+                return '添加节点，请选择控制器和控制器方法';
+            }
+
         }
         return true;
     }
@@ -80,6 +97,7 @@ class AdminAuthValidate extends Validate
      * 节点 auth_pid_str中有三个上级id
     */
     protected function checkPidStr($value,$rule,$data) {
+        //p($value);
         if(1==$data['auth_type'] && '-'!=$value) { //模块
             return 'pid_str错误.';
 

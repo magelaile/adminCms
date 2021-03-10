@@ -167,7 +167,6 @@ class AdminController extends BaseController
         return View::fetch();
     }
 
-
     //菜单权限列表
     public function menuAuthList() {
         $param = input();
@@ -178,10 +177,6 @@ class AdminController extends BaseController
             $res = $logic_admin_auth->getMeunAuthList($param);
             return response_json($res);
         }
-
-
-        //$logic_admin_auth = new \app\admin\logic\AdminAuthLogic();
-        //$res = $logic_admin_auth->getMeunAuthList($param);
 
         return View::fetch();
     }
@@ -199,11 +194,11 @@ class AdminController extends BaseController
             if('parent_menu'==$data_type) { //获取上级菜单
 
                 if(2==$param['auth_type']) {//添加导航
-                    $param['auth_levels'] = '1';
+                    $param['auth_type'] = '1';
                 }elseif (3==$param['auth_type']) {//添加菜单
-                    $param['auth_levels'] = '1,2';
+                    $param['auth_type'] = '1,2';
                 }elseif (4==$param['auth_type']) {//添加权限
-                    $param['auth_levels'] = '1,2,3';
+                    $param['auth_type'] = '1,2,3';
                 }
                 $res = $logic_admin_auth->getMeunAuthList($param);
 
@@ -214,7 +209,7 @@ class AdminController extends BaseController
 
             }else if('controller_action'==$data_type) { //获取控制器中的方法
 
-                $controller_name = $param['auth_c'];
+                $controller_name = $param['auth_c'].'Controller';
                 $contrl      = get_class_methods('app\admin\controller\\'.$controller_name);
                 $base_contrl = get_class_methods('app\BaseController');
                 $diffArray   = array_diff($contrl,$base_contrl);

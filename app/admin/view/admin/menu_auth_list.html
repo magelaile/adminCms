@@ -96,7 +96,7 @@
                         var dafault_icon        = '<i class="layui-icon layui-icon-layer"></i>'; //名称前的箭头
 
                         //auth_level ：1=级菜单 2=级菜单 3=级菜单关闭 4=级菜单隐藏
-                        if(4==row.auth_level) {
+                        if(4==row.auth_level || (3==row.auth_level && 4==row.auth_type)) {
                             arrow               = '';
                             click_event_class   = '';
                             dafault_icon        = '<i class="layui-icon layui-icon-file"></i>';
@@ -170,13 +170,13 @@
                     //自定义样式
                     //打开关闭样式，默认打开 1=级菜单 2=级菜单 3=级菜单关闭 4=级菜单隐藏
                     var open_close_class    = 'tree-table-open'; //展开关闭样式
-                    if(1==item.auth_level) {
+                    if(1==item.auth_type) {
                         open_close_class    = 'tree-table-open'; //打开
-                    } else if(2==item.auth_level){
+                    } else if(2==item.auth_type){
                         open_close_class    = 'tree-table-open'; //打开
-                    }else if(3==item.auth_level) {
+                    }else if(3==item.auth_type) {
                         open_close_class    = 'tree-table-close';//关闭
-                    } else if(4==item.auth_level) {
+                    } else if(4==item.auth_type) {
                         open_close_class    = 'tree-table-hide';//隐藏
                     }
 

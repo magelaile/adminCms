@@ -112,7 +112,7 @@ class AdminAuthValidate extends Validate
             }
 
         }else if(4==$data['auth_type']) { //节点
-            if( count(explode('-', trim($value,'-')))!=3 || false===strpos($value,$data['auth_pid']) ) {
+            if( !in_array(count(explode('-', trim($value,'-'))),[2,3]) || false===strpos($value,$data['auth_pid']) ) {
                 return 'pid_str错误...';
             }
         }

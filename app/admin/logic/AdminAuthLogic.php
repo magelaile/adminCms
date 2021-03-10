@@ -29,7 +29,7 @@ class AdminAuthLogic {
         //查询条件、字段
         $where = [];
         set_where_if_not_empty($where,$param,'auth_ids','IN','auth_id');
-        set_where_if_not_empty($where,$param,'auth_levels','IN','auth_level');
+        set_where_if_not_empty($where,$param,'auth_type','IN','auth_type');
         //p($where);
         $field = isset($param['field']) ? $param['field'] : "*";
 
@@ -48,7 +48,7 @@ class AdminAuthLogic {
         //查询条件、字段
         $where = [];
         set_where_if_not_empty($where,$param,'auth_ids','IN','auth_id');
-        set_where_if_not_empty($where,$param,'auth_levels','IN','auth_level');
+        set_where_if_not_empty($where,$param,'auth_type','IN','auth_type');
         //p($where);
         $field = "*";
 
@@ -155,6 +155,7 @@ class AdminAuthLogic {
         if($data['auth_pid']>0) {
             $res_parent_auth = $this->getAuthInfo(['auth_id'=>$data['auth_pid']]);
             $data['auth_p_type'] = $res_parent_auth['data']['auth_type'];
+            $data['auth_p_level'] = $res_parent_auth['data']['auth_level'];
             $data['auth_pid_str'] = $res_parent_auth['data']['auth_pid_str'].$res_parent_auth['data']['auth_id'].'-';
         }
 
@@ -167,10 +168,14 @@ class AdminAuthLogic {
             if(1==$data['auth_p_type']) {
                 $data['auth_level'] = 2; //二级菜单
             }else if(2==$data['auth_p_type']){
-                $data['auth_level'] = 3; //二级菜单
+                $data['auth_level'] = 3; //三级菜单
             }
         }else if(4==$data['auth_type']) { //节点
-            $data['auth_level'] = 4;
+            if(2==$data['auth_p_level']) {
+                $data['auth_level'] = 3; //三级节点
+            }else if(3==$data['auth_p_level']){
+                $data['auth_level'] = 4; //四级节点
+            }
         }
         //p($data);
 

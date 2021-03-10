@@ -56,12 +56,17 @@ function fail_return($msg='',$data=[],$count=0,$extra_data=[],$code=-1) {
 
 /* 去除字符串中空格和换行符
  * @param $data 字符串或者数组
+ * @param $extra_char 额外需要去掉的字符
  */
-function remove_space_and_eol(&$data) {
+function remove_space_and_eol(&$data,$extra_char=[]) {
     $filter_char = [' ','\t','\r','\n'];
 
+    if(is_array($extra_char) && !empty($extra_char)) {
+        $filter_char = array_merge($filter_char,$extra_char);
+    }
+
     if(is_string($data)) {
-        return str_replace($filter_char,'', $data);
+        $data = str_replace($filter_char,'', $data);
 
     }elseif (is_array($data)) {
         array_walk_recursive($data,function (&$value,$key) use (&$filter_char){

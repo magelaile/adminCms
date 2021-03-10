@@ -148,20 +148,19 @@ class AdminController extends BaseController
 
             $logic_admin_role = new \app\admin\logic\AdminRoleLogic();
 
-            if('tree_data'==$data_type) {
-                $role_id = $param['role_id'];
+            if('tree_data'==trim($param['data_type'])) {
 
                 //菜单权限树信息
-                $res_tree_data = $logic_admin_role->getAuthTreeData($role_id);
+                $res_tree_data = $logic_admin_role->getAuthTreeData($param);
                 return response_json($res_tree_data);
 
             } else {
-                $res = $logic_admin_role->editRole($param);
+                $res = $logic_admin_role->editRoleAuth($param);
                 return response_json($res);
             }
         }
 
-        
+
         $role_id = input('role_id/d',0);
         View::assign('role_id',$role_id);
 

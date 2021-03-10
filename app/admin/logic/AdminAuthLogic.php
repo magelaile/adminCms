@@ -10,7 +10,7 @@ class AdminAuthLogic {
     */
     public function getMeunAuthList($param = []) {
 
-        $res_menu_list = $this->getMenuListAll($param);
+        $res_menu_list = $this->getMenuAuthByLevel($param);
         if(!$res_menu_list['status']) {
             return $res_menu_list;
         }
@@ -23,9 +23,27 @@ class AdminAuthLogic {
 
     }
 
-    /* 获取所有权限列表并按层级分组
+    /*获取权限菜单列表
      */
-    public function getMenuListAll($param = []) {
+    public function getMeunAuthListNormal($param = []) {
+        //查询条件、字段
+        $where = [];
+        set_where_if_not_empty($where,$param,'auth_ids','IN','auth_id');
+        set_where_if_not_empty($where,$param,'auth_levels','IN','auth_level');
+        //p($where);
+        $field = isset($param['field']) ? $param['field'] : "*";
+
+        $model_admin_auth = new \app\admin\model\AdminAuth();
+        $lists = $model_admin_auth->field($field)->where($where)->select()->toArray();
+
+        return success_return('查询成功',$lists);
+    }
+
+
+
+    /*获取所有权限列表并按层级分组
+     */
+    public function getMenuAuthByLevel($param = []) {
 
         //查询条件、字段
         $where = [];

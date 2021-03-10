@@ -2,9 +2,6 @@
 
 namespace app\admin\logic;
 
-use app\admin\model\AdminRole;
-use think\Db;
-
 class AdminRoleLogic
 {
 
@@ -52,7 +49,7 @@ class AdminRoleLogic
         $where = [];
         $field = isset($param['field']) ? $param['field'] : "*";
 
-        $model_admin_role = new AdminRole();
+        $model_admin_role = new \app\admin\model\AdminRole();
         $list = $model_admin_role->field($field)->where($where)->select()->toArray();
 
         return success_return('查询成功',$list);
@@ -83,6 +80,32 @@ class AdminRoleLogic
     }
 
     //编辑角色
+    public function editRole($param = []) {
+        $data = [
+            'role_id'     => $param['role_id'],
+            'role_name'   => $param['role_name'],
+            'role_desc'   => $param['role_desc']
+        ];
+
+        remove_space_and_eol($data);
+
+        $validate_admin_role = new \app\admin\validate\AdminRoleValidate();
+        $result = $validate_admin_role->scene('edit')->check($data);
+        if(false===$result){
+            return fail_return($validate_admin_role->getError());
+        }
+
+        //保存数据
+        $model_admin_role = new \app\admin\model\AdminRole();
+        $res_update = $model_admin_role->update($data);
+        if(!$res_update) {
+            return fail_return();
+        }
+
+        return success_return();
+    }
+
+    //删除角色
     public function delRole($param = []) {
         //return success_return('删除成功');
 
@@ -120,14 +143,21 @@ class AdminRoleLogic
     }
 
     //角色权限
-    public function getAuthTreeData($role_auth_ids_arr = []) {
+    public function getAuthTreeData($param = []) {
+
+        if($param['role_id']<=0) {
+            return fail_return('参数错误');
+        }
+
+        //查找角色信息
+        $res_role_info = $this->getRoleInfo(['field'=>'role_id,role_auth_ids','role_id'=>intval($param['role_id'])]);
+        $role_auth_ids = $res_role_info['data']['role_auth_ids'];
+        $role_auth_ids_arr = !empty($role_auth_ids)?explode(',',$role_auth_ids):[];
+        $role_auth_ids_arr = array_flip($role_auth_ids_arr);
 
         //查询条件、字段
         $where = [];
-        //set_where_if_not_empty($where,$param,'auth_ids','IN','auth_id');
-        //set_where_if_not_empty($where,$param,'auth_levels','IN','auth_level');
-        //p($where);
-        $field = "*";
+        $field = 'auth_id,auth_name,auth_level,auth_pid,auth_pid_str';
 
         $model_admin_auth = new \app\admin\model\AdminAuth();
         $lists = $model_admin_auth->field($field)->where($where)->order('auth_level ASC,sort DESC')->select()->toArray();
@@ -138,16 +168,12 @@ class AdminRoleLogic
 
             $auth_id = $list_one['auth_id'];
 
-            //跳转链接生成
-            if(!empty($list_one['auth_c']) && !empty($list_one['auth_a'])) {
-                $list_one['_href'] = url('/'.$list_one['auth_c'].'/'.$list_one['auth_a'])->build();
-            }
-
             $tmp_one = [
-                'title'=> $list_one['auth_name'],
-                'id'=> $list_one['auth_id'],
-                'field'=> '',
-                'checked'=> false,
+                'title'     => $list_one['auth_name'],
+                'id'        => $auth_id,
+                'field'     => '',
+                'spread'    => true, //是否展开
+                'checked'   => isset($role_auth_ids_arr[$auth_id]) ? true : false, //是否选中
             ];
 
             //数据组装
@@ -189,5 +215,50 @@ class AdminRoleLogic
         return $arr_new;
     }
 
+    //角色权限保存
+    public function editRoleAuth($param = []) {
+
+        $ids = trim($param['ids'],',');
+        remove_space_and_eol($ids);
+
+        if($param['role_id']<=0) {
+            return fail_return('参数错误!');
+        }
+
+        $ids_arr = explode(',',$ids);
+        if(empty($ids_arr)) {
+            return fail_return('未选择任何权限!');
+        }
+
+        $logic_admin_auth = new \app\admin\logic\AdminAuthLogic();
+        $param_logic_auth = [
+            'field'=>"auth_id,auth_c,auth_a,auth_type,CONCAT_WS('_',auth_c,auth_a) AS auth_c_a",
+            'auth_ids'=>$ids_arr
+        ];
+        $auth_list = $logic_admin_auth->getMeunAuthListNormal($param_logic_auth);
+
+        $auth_ids = array_column($auth_list['data'],'auth_id');
+        $auth_ac  = array_column($auth_list['data'],'auth_c_a');
+
+        $auth_ids_str = implode(',',$auth_ids);
+        $auth_ac_str = implode(',',$auth_ac);
+        //去除无效的字符
+        remove_space_and_eol($auth_ac_str,['#_#,',' _#,',' _ ,','#_ ,']);
+        $auth_ac_str = strtolower($auth_ac_str);
+        //p($auth_ac_str);
+        //进行更新
+        $data = [
+            'role_auth_ids' => $auth_ids_str,
+            'role_auth_ac'  => $auth_ac_str
+        ];
+
+        $model_admin_role = new \app\admin\model\AdminRole();
+        $res = $model_admin_role->where('role_id','=',intval($param['role_id']))->save($data);
+        if(!$res) {
+            return fail_return('保存失败!');
+        }
+
+        return success_return('保存成功!');
+    }
 
 }
